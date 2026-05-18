@@ -1,23 +1,65 @@
 import User from "./user.js";
-import Service from "./cut.js";
+import Cut from "./cut.js";
 import Appointment from "./appointment.js";
+
 
 // 🔗 relaciones
 
 // cliente
-Appointment.belongsTo(User, { as: "client", foreignKey: "clientId" });
-User.hasMany(Appointment, { as: "clientAppointments", foreignKey: "clientId" });
+Appointment.belongsTo(
+  User,
+  {
+    as: "client",
+    foreignKey: "clientId"
+  }
+);
+
+User.hasMany(
+  Appointment,
+  {
+    as: "clientAppointments",
+    foreignKey: "clientId"
+  }
+);
+
 
 // barbero
-Appointment.belongsTo(User, { as: "barber", foreignKey: "barberId" });
-User.hasMany(Appointment, { as: "barberAppointments", foreignKey: "barberId" });
+Appointment.belongsTo(
+  User,
+  {
+    as: "barber",
+    foreignKey: "barberId"
+  }
+);
 
-// servicio
-Appointment.belongsTo(Service, { foreignKey: "cutId" });
-Service.hasMany(Appointment, { foreignKey: "cutId" });
+User.hasMany(
+  Appointment,
+  {
+    as: "barberAppointments",
+    foreignKey: "barberId"
+  }
+);
 
+
+// corte
+Appointment.belongsTo(
+  Cut,
+  {
+    foreignKey: "cutId"
+  }
+);
+
+Cut.hasMany(
+  Appointment,
+  {
+    foreignKey: "cutId"
+  }
+);
+
+
+// 🔥 EXPORTS
 export {
   User,
-  Service,
+  Cut,
   Appointment
 };

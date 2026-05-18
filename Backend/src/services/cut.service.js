@@ -1,27 +1,62 @@
-import { Service } from "../models/relations.js";
+import { Cut } from "../models/relations.js";
 
-export const getServices = async () => {
-  return await Service.findAll();
+
+// obtener todos los cortes
+export const getCuts = async () => {
+
+  return await Cut.findAll();
+
 };
 
-export const getServiceById = async (id) => {
-  const service = await Service.findByPk(id);
-  if (!service) throw new Error("Service not found");
-  return service;
+
+// obtener corte por id
+export const getCutById = async (id) => {
+
+  const cut = await Cut.findByPk(id);
+
+  if (!cut) {
+    throw new Error("Cut not found");
+  }
+
+  return cut;
+
 };
 
-export const createService = async (data) => {
-  return await Service.create(data);
+
+// crear corte
+export const createCut = async (data) => {
+
+  return await Cut.create(data);
+
 };
 
-export const updateService = async (id, data) => {
-  const service = await Service.findByPk(id);
-  if (!service) throw new Error("Service not found");
-  return await service.update(data);
+
+// actualizar corte
+export const updateCut = async (
+  id,
+  data
+) => {
+
+  const cut = await Cut.findByPk(id);
+
+  if (!cut) {
+    throw new Error("Cut not found");
+  }
+
+  return await cut.update(data);
+
 };
 
-export const deleteService = async (id) => {
-  const service = await Service.findByPk(id);
-  if (!service) throw new Error("Service not found");
-  return await service.destroy();
+
+// eliminar corte
+export const deleteCut = async (id) => {
+
+  const cut = await Cut.findByPk(id);
+
+  if (!cut) {
+    throw new Error("Cut not found");
+  }
+
+  return await cut.destroy();
+
 };

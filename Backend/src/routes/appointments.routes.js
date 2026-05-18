@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import {
   getAppointments,
   getAppointmentById,
@@ -7,47 +8,154 @@ import {
   deleteAppointment
 } from "../services/appointment.service.js";
 
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+
+import { roleMiddleware } from "../middlewares/role.middleware.js";
+
 const router = Router();
 
-router.get("/", async (req, res) => {
-  try {
-    res.json(await getAppointments());
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
-router.get("/:id", async (req, res) => {
-  try {
-    res.json(await getAppointmentById(req.params.id));
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-});
+// 🔍 obtener todos los turnos
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware("admin", "barber"),
 
-router.post("/", async (req, res) => {
-  try {
-    const data = await createAppointment(req.body);
-    res.status(201).json(data);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+  async (req, res) => {
 
-router.put("/:id", async (req, res) => {
-  try {
-    res.json(await updateAppointment(req.params.id, req.body));
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    try {
 
-router.delete("/:id", async (req, res) => {
-  try {
-    res.json(await deleteAppointment(req.params.id));
-  } catch (error) {
-    res.status(404).json({ error: error.message });
+      const appointments =
+        await getAppointments();
+
+      res.json(appointments);
+
+    } catch (error) {
+
+      res.status(500).json({
+        error: error.message
+      });
+
+    }
+
   }
-});
+);
+
+
+// 🔍 obtener turno por id
+router.get(
+  "/:id",
+  authMiddleware,
+
+  async (req, res) => {
+
+    try {
+
+      const appointment =
+        await getAppointmentById(
+          req.params.id
+        );
+
+      res.json(appointment);
+
+    } catch (error) {
+
+      res.status(404).json({
+        error: error.message
+      });
+
+    }
+
+  }
+);
+
+
+// ➕ crear turno
+router.post(
+  "/",
+  authMiddleware,
+  roleMiddleware("client"),
+
+  async (req, res) => {
+
+    try {
+
+      const appointment =
+        await createAppointment(
+          req.body
+        );
+
+      res.status(201).json(
+        appointment
+      );
+
+    } catch (error) {
+
+      res.status(400).json({
+        error: error.message
+      });
+
+    }
+
+  }
+);
+
+
+// ✏️ actualizar turno
+router.put(
+  "/:id",
+  authMiddleware,
+
+  async (req, res) => {
+
+    try {
+
+      const appointment =
+        await updateAppointment(
+          req.params.id,
+          req.body
+        );
+
+      res.json(appointment);
+
+    } catch (error) {
+
+      res.status(400).json({
+        error: error.message
+      });
+
+    }
+
+  }
+);
+
+
+// ❌ eliminar turno
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("admin"),
+
+  async (req, res) => {
+
+    try {
+
+      const appointment =
+        await deleteAppointment(
+          req.params.id
+        );
+
+      res.json(appointment);
+
+    } catch (error) {
+
+      res.status(404).json({
+        error: error.message
+      });
+
+    }
+
+  }
+);
 
 export default router;
