@@ -1,14 +1,24 @@
-import { Appointment, Client, Barber, Service } from "../models/index.js";
+import { Appointment, User, Service } from "../models/relations.js";
 
+// obtener todos los turnos
 export const getAppointments = async () => {
   return await Appointment.findAll({
-    include: [Client, Barber, Service]
+    include: [
+      { model: User, as: "client" },
+      { model: User, as: "barber" },
+      { model: Service }
+    ]
   });
 };
 
+// obtener un turno por ID
 export const getAppointmentById = async (id) => {
   const appointment = await Appointment.findByPk(id, {
-    include: [Client, Barber, Service]
+    include: [
+      { model: User, as: "client" },
+      { model: User, as: "barber" },
+      { model: Service }
+    ]
   });
 
   if (!appointment) throw new Error("Appointment not found");
@@ -16,9 +26,22 @@ export const getAppointmentById = async (id) => {
   return appointment;
 };
 
+// crear turno
 export const createAppointment = async (data) => {
-  // verofica si ya hay un turno, si hay manda un error
-  const exists= await Appointment.findOne({
+  // validar que el barbero exista
+  const barber = await User.findByPk(data.barberId);
+  if (!barber || barber.role !== "barber") {
+    throw new Error("Invalid barber");
+  }
+
+  //  validar que el cliente exista
+  const client = await User.findByPk(data.clientId);
+  if (!client || client.role !== "client") {
+    throw new Error("Invalid client");
+  }
+
+  // verificar turnos dobles 
+  const exists = await Appointment.findOne({
     where: {
       date: data.date,
       time: data.time,
@@ -33,6 +56,7 @@ export const createAppointment = async (data) => {
   return await Appointment.create(data);
 };
 
+// actualizar turno
 export const updateAppointment = async (id, data) => {
   const appointment = await Appointment.findByPk(id);
   if (!appointment) throw new Error("Appointment not found");
@@ -40,6 +64,7 @@ export const updateAppointment = async (id, data) => {
   return await appointment.update(data);
 };
 
+// eliminar turno
 export const deleteAppointment = async (id) => {
   const appointment = await Appointment.findByPk(id);
   if (!appointment) throw new Error("Appointment not found");
