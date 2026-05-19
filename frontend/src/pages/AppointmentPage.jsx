@@ -37,9 +37,10 @@ function AppointmentPage() {
     return barber.branchId === branch;
   }); // filtro los barberos segun la sucursal seleccionada antes
 
-
   return (
-    <div>
+    <div className="container py-4">
+      <Navbar></Navbar>
+      <hr className="border-warning opacity-50" />
       <BranchSelector
         branches={branches}
         /* branches.js → (import) → AppointmentPage → (prop) → BranchSelector */
@@ -47,17 +48,17 @@ function AppointmentPage() {
       />
       <p />
       {branch && (
-      <BarberList
-        barbers={filteredBarbers}
-        onSelectBarber={handleSelectBarber}
-      />
-)}
+        <BarberList
+          barbers={filteredBarbers}
+          onSelectBarber={handleSelectBarber}
+        />
+      )}
       {barber && (
-      <Calendar
-        selectedBranch={branch}
-        selectedBarber={barber}
-        onSelectDay={handleSelectDay}
-      />
+        <Calendar
+          selectedBranch={branch}
+          selectedBarber={barber}
+          onSelectDay={handleSelectDay}
+        />
       )}
       {day && (
         <TimeSlots
