@@ -52,6 +52,30 @@ function AppointmentPage() {
         barbers={filteredBarbers}
         onSelectBarber={handleSelectBarber}
       />
+      
+      <Calendar
+        selectedBranch={branch}
+        selectedBarber={barber}
+        onSelectedDay={handleSelectDay}
+
+      />
+      {day && (
+        <AppointmentForm
+        branch={branch}
+        barber={barber}
+        day={day}
+        hour={hour}
+        />
+      )}
+      {day && hour && (
+        <AppointmentForm
+        branch={branch}
+        barber={barber}
+        day={day}
+        hour={hour}
+        />
+      )}
+      
     </div>
   );
 }
