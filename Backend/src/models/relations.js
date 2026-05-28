@@ -3,7 +3,7 @@ import Cut from "./cut.js";
 import Appointment from "./appointment.js";
 
 
-// 🔗 relaciones
+//relaciones
 
 // cliente
 Appointment.belongsTo(
@@ -57,7 +57,7 @@ Cut.hasMany(
 );
 
 
-// 🔥 EXPORTS
+// EXPORTS
 export {
   User,
   Cut,
