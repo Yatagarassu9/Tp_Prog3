@@ -8,6 +8,7 @@ import "./models/relations.js";
 import userRoutes from "./routes/user.routes.js";
 import appointmentsRoutes from "./routes/appointments.routes.js";
 import cutRoutes from "./routes/cut.routes.js";
+import barberRoutes from "./routes/barber.routes.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/appointments", appointmentsRoutes);
 app.use("/cuts", cutRoutes);
+app.use("/barber", barberRoutes);
 
 app.get("/", (req, res) => {
   res.send("api andando como se viene diciendo");
