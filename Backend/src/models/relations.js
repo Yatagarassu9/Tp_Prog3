@@ -1,65 +1,48 @@
 import User from "./user.js";
 import Cut from "./cut.js";
 import Appointment from "./appointment.js";
+import Branch from "./branch.js";
 
-
-//relaciones
+// relaciones
 
 // cliente
-Appointment.belongsTo(
-  User,
-  {
-    as: "client",
-    foreignKey: "clientId"
-  }
-);
+Appointment.belongsTo(User, {
+  as: "client",
+  foreignKey: "clientId",
+});
 
-User.hasMany(
-  Appointment,
-  {
-    as: "clientAppointments",
-    foreignKey: "clientId"
-  }
-);
-
+User.hasMany(Appointment, {
+  as: "clientAppointments",
+  foreignKey: "clientId",
+});
 
 // barbero
-Appointment.belongsTo(
-  User,
-  {
-    as: "barber",
-    foreignKey: "barberId"
-  }
-);
+Appointment.belongsTo(User, {
+  as: "barber",
+  foreignKey: "barberId",
+});
 
-User.hasMany(
-  Appointment,
-  {
-    as: "barberAppointments",
-    foreignKey: "barberId"
-  }
-);
-
+User.hasMany(Appointment, {
+  as: "barberAppointments",
+  foreignKey: "barberId",
+});
 
 // corte
-Appointment.belongsTo(
-  Cut,
-  {
-    foreignKey: "cutId"
-  }
-);
+Appointment.belongsTo(Cut, {
+  foreignKey: "cutId",
+});
 
-Cut.hasMany(
-  Appointment,
-  {
-    foreignKey: "cutId"
-  }
-);
+Cut.hasMany(Appointment, {
+  foreignKey: "cutId",
+});
 
+// branch
+Branch.hasMany(User, {
+  foreignKey: "branchId",
+});
 
-// EXPORTS
-export {
-  User,
-  Cut,
-  Appointment
-};
+User.belongsTo(Branch, {
+  foreignKey: "branchId",
+});
+
+export { User, Cut, Appointment, Branch };
