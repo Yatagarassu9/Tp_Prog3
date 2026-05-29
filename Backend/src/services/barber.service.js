@@ -9,7 +9,9 @@ export const getBarbers = async () => {
 };
 
 export const getBarberById = async (id) => {
-  const barber = await User.findByPk(id);
+  const barber = await User.findOne({
+    where: { id, role: "barber" },
+  });
   if (!barber) throw new Error("Barber not found");
   return barber;
 };
@@ -24,12 +26,12 @@ export const createBarber = async (data) => {
 
 export const updateBarber = async (id, data) => {
   const barber = await User.findByPk(id);
-  if (!barber) throw new Error("User not found");
+  if (!barber) throw new Error("Barber not found");
   return await barber.update(data);
 };
 
 export const deleteBarber = async (id) => {
   const barber = await User.findByPk(id);
-  if (!barber) throw new Error("User not found");
+  if (!barber) throw new Error("Barber not found");
   return await barber.destroy();
 };

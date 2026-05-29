@@ -18,13 +18,17 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   // datos del barbero
   imageUrl: {
     type: DataTypes.STRING,
     allowNull: true,
   },
   branchId: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: true,
   },
   yearsOfExperience: {
