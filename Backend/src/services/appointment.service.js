@@ -5,7 +5,7 @@ import {
 } from "../models/relations.js";
 
 
-// 🔍 obtener todos los turnos
+// obtener todos los turnos
 export const getAppointments = async () => {
 
   return await Appointment.findAll({
@@ -19,7 +19,7 @@ export const getAppointments = async () => {
 };
 
 
-// 🔍 obtener turno por id
+//  obtener turno por id
 export const getAppointmentById = async (id) => {
 
   const appointment = await Appointment.findByPk(id, {
@@ -39,7 +39,7 @@ export const getAppointmentById = async (id) => {
 };
 
 
-// ➕ crear turno
+//  crear turno
 export const createAppointment = async (data) => {
 
   // validar fecha
@@ -99,7 +99,7 @@ export const createAppointment = async (data) => {
 };
 
 
-// ✏️ actualizar turno
+// actualizar turno
 export const updateAppointment = async (
   id,
   data
@@ -119,7 +119,7 @@ export const updateAppointment = async (
 };
 
 
-// ❌ eliminar turno
+//  eliminar turno
 export const deleteAppointment = async (
   id
 ) => {

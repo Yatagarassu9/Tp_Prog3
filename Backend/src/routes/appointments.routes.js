@@ -15,7 +15,7 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 const router = Router();
 
 
-// 🔍 obtener todos los turnos
+// obtener todos los turnos
 router.get(
   "/",
   authMiddleware,
@@ -42,7 +42,7 @@ router.get(
 );
 
 
-// 🔍 obtener turno por id
+// obtener turno por id
 router.get(
   "/:id",
   authMiddleware,
@@ -70,7 +70,7 @@ router.get(
 );
 
 
-// ➕ crear turno
+// crear turno
 router.post(
   "/",
   authMiddleware,
@@ -101,7 +101,7 @@ router.post(
 );
 
 
-// ✏️ actualizar turno
+// actualizar turno
 router.put(
   "/:id",
   authMiddleware,
@@ -130,7 +130,7 @@ router.put(
 );
 
 
-// ❌ eliminar turno
+// eliminar turno
 router.delete(
   "/:id",
   authMiddleware,

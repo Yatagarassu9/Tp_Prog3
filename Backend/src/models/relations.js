@@ -45,5 +45,4 @@ User.belongsTo(Branch, {
   foreignKey: "branchId",
 });
 
-// EXPORTS
 export { User, Cut, Appointment, Branch };

@@ -15,7 +15,7 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 const router = Router();
 
 
-// 🔍 obtener todos los cortes
+// obtener todos los cortes
 router.get(
   "/",
   authMiddleware,
@@ -40,7 +40,7 @@ router.get(
 );
 
 
-// 🔍 obtener corte por id
+// obtener corte por id
 router.get(
   "/:id",
   authMiddleware,
@@ -66,8 +66,7 @@ router.get(
   }
 );
 
-
-// ➕ crear corte
+//  crear corte
 router.post(
   "/",
   authMiddleware,
@@ -95,7 +94,7 @@ router.post(
 );
 
 
-// ✏️ actualizar corte
+//  actualizar corte
 router.put(
   "/:id",
   authMiddleware,
@@ -124,7 +123,7 @@ router.put(
 );
 
 
-// ❌ eliminar corte
+//  eliminar corte
 router.delete(
   "/:id",
   authMiddleware,
