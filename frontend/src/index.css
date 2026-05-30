@@ -1,4 +1,10 @@
 body {
-    background-color: #1a1a1a;
+    background-image: url('/images/BgMainPage.png');
+    background-size: cover; 
+    background-position: center;
+    background-attachment: fixed;
 }
+
+/* background-position: center --> la imagen cubre toda la pantalla
+    background-attachment: fixed --> el fondo queda fijo al scrollear */ 
 

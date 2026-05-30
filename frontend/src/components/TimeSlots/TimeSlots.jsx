@@ -30,7 +30,7 @@ function TimeSlots({
 
   return (
     <div className="mt-4">
-      <h5 className="text-warning mb-3 text-dark">Elegí un horario</h5>
+      <h5 className="btn btn-dark text-white w-100 p-1 mb-3">Elegí un horario</h5>
       <div className="d-flex gap-2">{mapedHours}</div>
     </div>
   );

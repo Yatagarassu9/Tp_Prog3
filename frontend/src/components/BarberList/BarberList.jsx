@@ -5,11 +5,11 @@ function BarberList({ barbers, onSelectBarber }) {
 
   const mapedBarbers = barbers.map((barber) => {
     return (
-      <button
+      <button 
         className={
           selected === barber.id
-            ? "btn btn-warning text-dark m-1"
-            : "btn btn-outline-warning text-dark m-1 "
+            ? "btn btn-warning text-white m-1"
+            : "btn btn-dark text-white m-1 "
         }
         key={barber.id}
         onClick={() => {
@@ -24,7 +24,7 @@ function BarberList({ barbers, onSelectBarber }) {
 
   return (
     <div className="mt-4">
-      <h5 className="mb-3 text-dark">Seleccioná un barbero:</h5>
+      <h5 className="mb-3 text-white">Seleccioná un barbero:</h5>
       <div className="d-flex gap-2">{mapedBarbers}</div>
     </div>
   );

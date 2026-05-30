@@ -1,11 +1,17 @@
 import { useState } from "react";
-import branches from "../../data/branches";
-import barbers from "../../data/barbers";
 import timeSlots from "../../data/timeSlots";
 import Login from "../auth/Login";
 import Register from "../auth/Register";
 
-function AppointmentForm({ branch, barber, day, hours }) {
+function AppointmentForm({
+  branch,
+  barber,
+  day,
+  hours,
+  branches,
+  barbers,
+  timeSlots,
+}) {
   const [showModal, setShowModal] = useState(false);
   const [view, setView] = useState("login"); // "login" | "register"
   const [confirmed, setConfirmed] = useState(false);
@@ -56,7 +62,10 @@ function AppointmentForm({ branch, barber, day, hours }) {
             ¡Turno confirmado!
           </div>
         ) : (
-          <button className="btn btn-warning text-dark mt-3 w-100" onClick={openModal}>
+          <button
+            className="btn btn-warning text-dark mt-3 w-100"
+            onClick={openModal}
+          >
             Confirmar Turno
           </button>
         )}
@@ -64,20 +73,37 @@ function AppointmentForm({ branch, barber, day, hours }) {
 
       {showModal && (
         <>
-          <div className="modal show d-block" tabIndex="-1" onClick={closeModal}>
-            <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal show d-block"
+            tabIndex="-1"
+            onClick={closeModal}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="modal-content bg-dark border-warning">
                 <div className="modal-header border-warning">
                   <h5 className="modal-title text-warning">
                     {view === "login" ? "Iniciar sesión" : "Crear cuenta"}
                   </h5>
-                  <button type="button" className="btn-close btn-close-white" onClick={closeModal} />
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={closeModal}
+                  />
                 </div>
                 <div className="modal-body">
                   {view === "login" ? (
-                    <Login onLogin={handleLoginSuccess} onCancel={handleLoginCancel} />
+                    <Login
+                      onLogin={handleLoginSuccess}
+                      onCancel={handleLoginCancel}
+                    />
                   ) : (
-                    <Register onRegister={handleRegisterSuccess} onCancel={() => setView("login")} />
+                    <Register
+                      onRegister={handleRegisterSuccess}
+                      onCancel={() => setView("login")}
+                    />
                   )}
                 </div>
               </div>

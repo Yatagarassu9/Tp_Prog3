@@ -5,27 +5,45 @@ import BarberList from "../components/BarberList/BarberList";
 import BranchSelector from "../components/BranchSelector/BranchSelector";
 import Calendar from "../components/Calendar/Calendar";
 import TimeSlots from "../components/TimeSlots/TimeSlots";
-import { useState } from "react";
-import branches from "../data/branches";
-import barbers from "../data/barbers";
+import { useState, useEffect } from "react";
 import timeSlots from "../data/timeSlots";
 
 function AppointmentPage() {
-  const [branch, setBranch] = useState(null);
-  const [barber, setBarber] = useState(null);
   const [day, setDay] = useState(null);
   const [hour, setHour] = useState(null);
+  const [branches, setBranches] = useState([]);
+  const [barbers, setBarbers] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [selectedBarber, setSelectedBarber] = useState(null);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/barbers")
+      .then((res) => res.json())
+      .then((data) => setBarbers(data));
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/branches")
+      .then((res) => res.json())
+      .then((data) => setBranches(data));
+  }, []);
 
   const handleSelectBranch = (branchId) => {
-    setBranch(branchId);
+    setSelectedBranch(branchId);
+    setSelectedBarber(null);
+    setDay(null);
+    setHour(null);
   };
 
   const handleSelectBarber = (barberId) => {
-    setBarber(barberId);
+    setSelectedBarber(barberId);
+    setDay(null);
+    setHour(null);
   };
 
   const handleSelectDay = (day) => {
     setDay(day);
+    setHour(null);
   };
 
   const handleSelectHour = (hours) => {
@@ -33,8 +51,8 @@ function AppointmentPage() {
   };
 
   const filteredBarbers = barbers.filter((barber) => {
-    if (!branch) return true;
-    return barber.branchId === branch;
+    if (!selectedBranch) return true;
+    return barber.branchId === selectedBranch;
   }); // filtro los barberos segun la sucursal seleccionada antes
 
   return (
@@ -47,24 +65,26 @@ function AppointmentPage() {
         onSelectBranch={handleSelectBranch}
       />
       <p />
-      {branch && (
+      {selectedBranch && (
         <BarberList
           barbers={filteredBarbers}
           onSelectBarber={handleSelectBarber}
         />
       )}
-      {barber && (
+      {selectedBarber && (
         <Calendar
-          selectedBranch={branch}
-          selectedBarber={barber}
+         key={selectedBarber}
+          selectedBranch={selectedBranch}
+          selectedBarber={selectedBarber}
           onSelectDay={handleSelectDay}
         />
       )}
       {day && (
         <TimeSlots
           hours={timeSlots}
-          selectedBranch={branch}
-          selectedBarber={barber}
+          key={selectedBarber + selectedDay} //  el + une los dos valores en un string
+          selectedBranch={selectedBranch}
+          selectedBarber={selectedBarber}
           selectedDay={day}
           onSelectHour={handleSelectHour}
         />
@@ -72,8 +92,8 @@ function AppointmentPage() {
 
       {day && hour && (
         <AppointmentForm
-          branch={branch}
-          barber={barber}
+          branch={selectedBranch}
+          barber={selectedBarber}
           day={day}
           hours={hour}
         />
