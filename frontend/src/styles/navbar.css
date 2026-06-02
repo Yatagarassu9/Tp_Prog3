@@ -1,0 +1,49 @@
+.custom-navbar {
+  background-color: rgba(19, 19, 19, 0.75); /* el 0.75 es la opacidad, va del 0 al 1*/
+  backdrop-filter: blur(12px); /* el efecto vidrio esmerilado */
+  border-bottom: 1px solid var(--accent-primary);
+  padding: 1rem 2rem;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-title {
+  color: var(--accent-primary);
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* los <a> tienen subrayado por defecto asi que lo sacamos con text-decoration none*/
+.navbar-links a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease; 
+}
+
+
+.navbar-cta {
+  text-decoration: none;
+}
+
+.navbar-icon {
+  color: var(--accent-primary);
+  font-size: 1.4rem;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

@@ -1,7 +1,7 @@
 import { Card, Button } from "react-bootstrap";
 import "../../styles/appointment.css";
 
-function BarberCard({ isSelected, barber, onClick }) {
+function BranchCard({ branch, isSelected, onClick }) {
   return (
     <Card
       className={`bg-black shadow-lg rounded-4 ${isSelected ? "border-warning border-4" : "border-0"}`}
@@ -14,17 +14,17 @@ function BarberCard({ isSelected, barber, onClick }) {
           : {}
       }
     >
-      <Card.Img style={{width: "100%", height:"auto", objectPosition: "top"}} variant="top" src={barber.imageUrl} />
+      <Card.Img style={{ width: "100%" }} variant="top" src={branch.imageUrl} />
       <Card.Body className="card-body-custom">
-        <Card.Title className="text-warning">{barber.name}</Card.Title>
-        <p>Años de experiencia: {barber.yearsOfExperience}</p>
-        <p>Telefono: {barber.phone}</p>
-        <Button variant="warning" className="w-100" onClick={onClick}>
-          Seleccionar barbero
+        <Card.Title className="text-warning">{branch.name}</Card.Title>
+        <p>Dirección: {branch.address}</p>
+        <p>Telefono: {branch.phone}</p>
+        <Button variant="outline-warning" className="w-100" onClick={onClick}>
+          Seleccionar sucursal
         </Button>
       </Card.Body>
     </Card>
   );
 }
 
-export default BarberCard;
+export default BranchCard;

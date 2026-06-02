@@ -1,30 +1,30 @@
 import { useState } from "react";
+import BranchCard from "../BranchCard/BranchCard";
+import { Row } from "react-bootstrap";
+
 
 function BranchSelector({ branches, onSelectBranch }) {
-   const [selected, setSelected] = useState(null); 
+  const [selected, setSelected] = useState(null);
 
   const mapedBranches = branches.map((branch) => {
     return (
-      <button
-        className={
-          selected === branch.id
-                  ? "btn btn-warning text-dark w-100 p-1"
-                  : "btn btn-outline-warning text-dark w-100 p-1"
-              }
-        key={branch.id}
-        onClick={() => {setSelected(branch.id); onSelectBranch(branch.id)}}
-      >
-        {branch.name}
-      </button>
+      <div className="col-md-4" key={branch.id}>
+        <BranchCard
+          branch={branch}
+          isSelected={selected === branch.id}
+          onClick={() => {
+            setSelected(branch.id);
+            onSelectBranch(branch.id);
+          }}
+        />
+      </div>
     );
   });
 
- 
-
   return (
-    <div className="mt-4">
-      <h5 className="text-warning mb-3 text-dark">Seleccioná una sucursal:</h5>
-      <div className="d-flex gap-2">{mapedBranches}</div>
+    <div style={{ marginTop: "4rem" }}>
+      <h5 className="section-title">Seleccioná una sucursal:</h5>
+      <Row className="g-5">{mapedBranches}</Row>
     </div>
   );
 }

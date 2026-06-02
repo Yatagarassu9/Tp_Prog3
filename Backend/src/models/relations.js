@@ -36,7 +36,7 @@ Cut.hasMany(Appointment, {
   foreignKey: "cutId",
 });
 
-// branch
+// branch se relaciona con user (barber)
 Branch.hasMany(User, {
   foreignKey: "branchId",
 });
@@ -44,5 +44,9 @@ Branch.hasMany(User, {
 User.belongsTo(Branch, {
   foreignKey: "branchId",
 });
+
+// branch se relacion con appointment desde Barber, por lo tanto
+// no creamos esa relacion redundante
+
 
 export { User, Cut, Appointment, Branch };

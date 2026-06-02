@@ -1,0 +1,74 @@
+@import "./variables.css";
+
+.btn-primary-custom {
+  position: relative;
+  overflow: hidden;
+}
+
+/* boton */
+.btn-outline-custom {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+/* elemento virtual que se crea dentro del css del boton */
+.btn-outline-custom::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--accent-primary);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+/* TRANSITION: 
+duración 0.3s rápido, 0.6s más lento. CHEQUEAR 
+cómo acelera/desacelera el movimiento:
+ease: arranca rápido, frena al final
+linear: velocidad constante de principio a fin
+ease-in: arranca lento, termina rápido
+ease-out: arranca rápido, termina lento
+*/
+
+/* cuando el mouse esta encima del elemento virtual */
+.btn-outline-custom:hover::before {
+  transform: translateX(0);
+}
+
+.branch-card:hover {
+  border: 1px solid var(--accent-primary); /* borde dorado al hover */
+}
+
+.navbar-links a:hover {
+  color: var(--accent-primary);
+}
+
+/* 
+content: ''           - requerido para que el pseudo-elemento exista (puede estar vacío)
+position: absolute    - saca el elemento del flujo normal, se posiciona respecto al padre
+top/left: 0           - ancla el pseudo-elemento al borde del botón
+transform: translateX - mueve el elemento horizontalmente (-100% = afuera a la izquierda)
+transition            - define la animación: qué propiedad, duración y curva
+z-index: -1           - pone el elemento detrás del texto del botón
+::before              - pseudo-elemento virtual creado antes del contenido del elemento
+:hover                - estado activo cuando el mouse está encima
+*/
+
+/* PRUEBAS PARA LA NAVEGACION */
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.page-transition {
+  animation: page-enter 0.3s ease;
+}
