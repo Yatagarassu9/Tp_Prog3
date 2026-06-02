@@ -6,7 +6,7 @@ const Branch = sequelize.define("Branch", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  adress: {
+  address: {
     type: DataTypes.STRING,
     allowNull: false,
   },

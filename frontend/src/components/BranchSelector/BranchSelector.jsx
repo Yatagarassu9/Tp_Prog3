@@ -2,6 +2,7 @@ import { useState } from "react";
 import BranchCard from "../BranchCard/BranchCard";
 import { Row } from "react-bootstrap";
 
+
 function BranchSelector({ branches, onSelectBranch }) {
   const [selected, setSelected] = useState(null);
 
@@ -21,9 +22,9 @@ function BranchSelector({ branches, onSelectBranch }) {
   });
 
   return (
-    <div className="mt-4">
-      <h5 className="text-warning mb-5 text-white fs-2">Seleccioná una sucursal:</h5>
-      <Row className="g-3">{mapedBranches}</Row>
+    <div style={{ marginTop: "4rem" }}>
+      <h5 className="section-title">Seleccioná una sucursal:</h5>
+      <Row className="g-5">{mapedBranches}</Row>
     </div>
   );
 }

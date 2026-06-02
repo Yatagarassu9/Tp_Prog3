@@ -14,8 +14,8 @@ function TimeSlots({
       <button
         className={
           selected === hour.id
-            ? "btn btn-warning text-dark m-1"
-            : "btn btn-outline-warning text-dark m-1 "
+            ? "btn btn-warning text-white w-100 p-3"
+            : "btn btn-dark text-white w-100 p-3"
         }
         key={hour.id}
         onClick={() => {
@@ -30,8 +30,16 @@ function TimeSlots({
 
   return (
     <div className="mt-4">
-      <h5 className="btn btn-dark text-white w-100 p-1 mb-3">Elegí un horario</h5>
-      <div className="d-flex gap-2">{mapedHours}</div>
+      <h5 className="btn-dark text-white w-100 p-1 mb-3">Elegí un horario</h5>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(10, auto)",
+          gap: "8px",
+        }}
+      >
+        {mapedHours}
+      </div>
     </div>
   );
 }

@@ -40,7 +40,7 @@ export const seedBarbers = async () => {
         role: "barber",
       },
       {
-        name: "Fabricio Columba",
+        name: "Fabrizio Columba",
         email: "fabriarber@gmail.com",
         phone: "3413462791",
         imageUrl: "/images/fabri.jpg",
@@ -63,7 +63,7 @@ export const seedBarbers = async () => {
         name: "Leonel Longo",
         email: "longelbarber@gmail.com",
         phone: "3419672364",
-        imageUrl: "/images/seba.jpg",
+        imageUrl: "/images/longel.jpg",
         branchId: 1,
         yearsOfExperience: "2",
         password: "sin-password",

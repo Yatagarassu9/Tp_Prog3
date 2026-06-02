@@ -5,28 +5,22 @@ import BarberList from "../components/BarberList/BarberList";
 import BranchSelector from "../components/BranchSelector/BranchSelector";
 import Calendar from "../components/Calendar/Calendar";
 import TimeSlots from "../components/TimeSlots/TimeSlots";
-import { useState, useEffect } from "react";
 import timeSlots from "../data/timeSlots";
+import "../styles/appointment.css";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { Button } from "react-bootstrap";
+import useBranches from "../hooks/useBranches.js";
+import useBarbers from "../hooks/useBarbers.js";
 
 function AppointmentPage() {
   const [day, setDay] = useState(null);
   const [hour, setHour] = useState(null);
-  const [branches, setBranches] = useState([]);
-  const [barbers, setBarbers] = useState([]);
+  const branches = useBranches();
+  const barbers = useBarbers();
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [selectedBarber, setSelectedBarber] = useState(null);
-
-  useEffect(() => {
-    fetch("http://localhost:3000/barbers")
-      .then((res) => res.json())
-      .then((data) => setBarbers(data));
-  }, []);
-
-  useEffect(() => {
-    fetch("http://localhost:3000/branches")
-      .then((res) => res.json())
-      .then((data) => setBranches(data));
-  }, []);
+  const navigate = useNavigate();
 
   const handleSelectBranch = (branchId) => {
     setSelectedBranch(branchId);
@@ -56,12 +50,15 @@ function AppointmentPage() {
   }); // filtro los barberos segun la sucursal seleccionada antes
 
   return (
-    <div className="container py-4">
+    <div className="appointment-page-bg page-transition">
       <Navbar></Navbar>
       <hr className="border-warning opacity-50" />
+      <Button variant="outline-warning" onClick={() => navigate("/")}>
+        Ir al inicio
+      </Button>
       <BranchSelector
         branches={branches}
-        /* branches.js → (import) → AppointmentPage → (prop) → BranchSelector */
+        /* branches.js - (import) - AppointmentPage - (prop) - BranchSelector */
         onSelectBranch={handleSelectBranch}
       />
       <p />
@@ -73,7 +70,7 @@ function AppointmentPage() {
       )}
       {selectedBarber && (
         <Calendar
-         key={selectedBarber}
+          key={selectedBarber}
           selectedBranch={selectedBranch}
           selectedBarber={selectedBarber}
           onSelectDay={handleSelectDay}
@@ -82,7 +79,7 @@ function AppointmentPage() {
       {day && (
         <TimeSlots
           hours={timeSlots}
-          key={selectedBarber + selectedDay} //  el + une los dos valores en un string
+          key={selectedBarber + day} //  el + une los dos valores en un string
           selectedBranch={selectedBranch}
           selectedBarber={selectedBarber}
           selectedDay={day}
@@ -96,6 +93,9 @@ function AppointmentPage() {
           barber={selectedBarber}
           day={day}
           hours={hour}
+          branches={branches}
+          barbers={barbers}
+          timeSlots={timeSlots}
         />
       )}
     </div>

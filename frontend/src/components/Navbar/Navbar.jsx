@@ -1,18 +1,19 @@
-import "bootstrap/dist/css/bootstrap.min.css";
+import "../../styles/navbar.css";
+import { Link } from "react-router";
 
 function Navbar() {
   return (
-    <nav className="navbar navbar-dark bg-dark py-3">
-      <div className="container text-center rounded">
-        <a className="navbar-brand fw-bold fs-1">
-          Barbería Craneo Barbero
-        </a>
-        <p
-          className="text-warning mb-0"
-          style={{ fontSize: "1.5rem", letterSpacing: "3px" }}
-        >
-          Barbería & Estilo
-        </p>
+    <nav className="custom-navbar">
+      <div className="navbar-brand">
+        <span className="navbar-title">Barbería Cráneo Barbero</span>
+      </div>
+      <div className="navbar-links">
+        <a href="#hero">Inicio</a>
+        <a href="#branches">Sucursales</a>
+        <a href="#history">Nosotros</a>
+        <Link to="/appointment" className="navbar-cta">
+          Sacar turno
+        </Link>
       </div>
     </nav>
   );

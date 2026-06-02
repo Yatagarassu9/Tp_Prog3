@@ -1,4 +1,5 @@
 import { Card, Button } from "react-bootstrap";
+import "../../styles/appointment.css";
 
 function BranchCard({ branch, isSelected, onClick }) {
   return (
@@ -13,12 +14,12 @@ function BranchCard({ branch, isSelected, onClick }) {
           : {}
       }
     >
-      <Card.Img height={450} variant="top" src={branch.imageUrl} />
-      <Card.Body className="text-white">
+      <Card.Img style={{ width: "100%" }} variant="top" src={branch.imageUrl} />
+      <Card.Body className="card-body-custom">
         <Card.Title className="text-warning">{branch.name}</Card.Title>
-        <p>Dirección: {branch.adress}</p>
+        <p>Dirección: {branch.address}</p>
         <p>Telefono: {branch.phone}</p>
-        <Button variant="warning" className="w-100" onClick={onClick}>
+        <Button variant="outline-warning" className="w-100" onClick={onClick}>
           Seleccionar sucursal
         </Button>
       </Card.Body>
