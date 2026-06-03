@@ -5,7 +5,8 @@ import {
   getAppointmentById,
   createAppointment,
   updateAppointment,
-  deleteAppointment
+  deleteAppointment,
+  getAppointmentsByClientId
 } from "../services/appointment.service.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -27,6 +28,32 @@ router.get(
 
       const appointments =
         await getAppointments();
+
+      res.json(appointments);
+
+    } catch (error) {
+
+      res.status(500).json({
+        error: error.message
+      });
+
+    }
+
+  }
+);
+
+
+// obtener turnos del usuario autenticado
+router.get(
+  "/my",
+  authMiddleware,
+
+  async (req, res) => {
+
+    try {
+
+      const appointments =
+        await getAppointmentsByClientId(req.user.id);
 
       res.json(appointments);
 

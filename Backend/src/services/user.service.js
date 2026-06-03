@@ -26,6 +26,9 @@ export const createUser = async (data) => {
 export const updateUser = async (id, data) => {
   const user = await User.findByPk(id);
   if (!user) throw new Error("User not found");
+  if (data.password) {
+    data = { ...data, password: await bcrypt.hash(data.password, 10) };
+  }
   return await user.update(data);
 };
 
