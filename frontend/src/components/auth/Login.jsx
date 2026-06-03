@@ -44,7 +44,7 @@ const Login = ({ onLogin, onCancel }) => {
             ({ token }) => {
                 localStorage.setItem("barberia-token", token);
                 setLoading(false);
-                onLogin();
+                onLogin(token);
             },
             (err) => {
                 setServerError(err.message);

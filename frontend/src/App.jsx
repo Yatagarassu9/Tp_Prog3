@@ -1,22 +1,27 @@
-import { useState } from "react";
 import "./App.css";
 import AppointmentPage from "./pages/AppointmentPage";
 import BarberDashboardPage from "./pages/BarberDashboardPage";
 import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import CambiarContrasenaPage from "./pages/CambiarContrasenaPage";
+import MisTurnosPage from "./pages/MisTurnosPage";
 import { BrowserRouter, Routes, Route } from "react-router";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
-          <Route path="/" element={<HomePage/>}></Route>
-          <Route path="/appointment" element={<AppointmentPage/>}></Route>
-          <Route path="/barber" element={<BarberDashboardPage/>}></Route>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/appointment" element={<AppointmentPage />} />
+          <Route path="/barber" element={<BarberDashboardPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/mi-cuenta/cambiar-contrasena" element={<CambiarContrasenaPage />} />
+          <Route path="/mi-cuenta/mis-turnos" element={<MisTurnosPage />} />
         </Routes>
-        
-      </BrowserRouter>
-    </>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

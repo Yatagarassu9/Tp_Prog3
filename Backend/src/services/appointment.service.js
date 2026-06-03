@@ -136,3 +136,19 @@ export const deleteAppointment = async (
   return await appointment.destroy();
 
 };
+
+
+// obtener turnos por cliente
+export const getAppointmentsByClientId = async (clientId) => {
+
+  return await Appointment.findAll({
+    where: { clientId },
+    include: [
+      { model: User, as: "client" },
+      { model: User, as: "barber" },
+      { model: Cut }
+    ],
+    order: [["appointmentDate", "DESC"]]
+  });
+
+};

@@ -2,6 +2,7 @@ import { useState } from "react";
 import timeSlots from "../../data/timeSlots";
 import Login from "../auth/Login";
 import Register from "../auth/Register";
+import { useAuth } from "../../context/AuthContext";
 
 function AppointmentForm({
   branch,
@@ -12,6 +13,7 @@ function AppointmentForm({
   barbers,
   timeSlots,
 }) {
+  const { login } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [view, setView] = useState("login"); // "login" | "register"
   const [confirmed, setConfirmed] = useState(false);
@@ -36,7 +38,8 @@ function AppointmentForm({
     }
   };
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (token) => {
+    login(token);
     closeModal();
     setConfirmed(true);
   };
