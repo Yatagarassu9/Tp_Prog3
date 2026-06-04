@@ -1,0 +1,29 @@
+const BASE_URL = "http://localhost:3000";
+
+const authHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("barberia-token")}`,
+});
+
+export const createAppointmentService = (
+  clientId,
+  barberId,
+  appointmentDate,
+  onSuccess,
+  onError
+) => {
+  fetch(`${BASE_URL}/appointments`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ clientId, barberId, appointmentDate }),
+  })
+    .then(async (res) => {
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Error al confirmar el turno");
+      }
+      return res.json();
+    })
+    .then(onSuccess)
+    .catch(onError);
+};

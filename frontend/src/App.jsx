@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import CambiarContrasenaPage from "./pages/CambiarContrasenaPage";
 import MisTurnosPage from "./pages/MisTurnosPage";
+import NosotrosPage from "./pages/NosotrosPage";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -14,6 +15,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/nosotros" element={<NosotrosPage />} />
           <Route path="/appointment" element={<AppointmentPage />} />
           <Route path="/barber" element={<BarberDashboardPage />} />
           <Route path="/login" element={<LoginPage />} />

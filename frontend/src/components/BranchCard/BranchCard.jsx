@@ -14,7 +14,6 @@ function BranchCard({ branch, isSelected, onClick }) {
           : {}
       }
     >
-      <Card.Img style={{ width: "100%" }} variant="top" src={branch.imageUrl} />
       <Card.Body className="card-body-custom">
         <Card.Title className="text-warning">{branch.name}</Card.Title>
         <p>Dirección: {branch.address}</p>

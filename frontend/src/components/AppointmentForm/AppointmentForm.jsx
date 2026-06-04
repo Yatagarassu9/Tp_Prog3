@@ -3,6 +3,7 @@ import timeSlots from "../../data/timeSlots";
 import Login from "../auth/Login";
 import Register from "../auth/Register";
 import { useAuth } from "../../context/AuthContext";
+import { createAppointmentService } from "./appointment.services";
 
 function AppointmentForm({
   branch,
@@ -13,14 +14,34 @@ function AppointmentForm({
   barbers,
   timeSlots,
 }) {
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const [showModal, setShowModal] = useState(false);
-  const [view, setView] = useState("login"); // "login" | "register"
+  const [view, setView] = useState("login");
   const [confirmed, setConfirmed] = useState(false);
+  const [confirmError, setConfirmError] = useState("");
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   const selectedBranch = branches.find((b) => b.id === branch);
   const selectedBarber = barbers.find((barb) => barb.id === barber);
   const selectedHour = timeSlots.find((hour) => hour.id === hours);
+
+  const handleConfirm = () => {
+    if (!user) { openModal(); return; }
+    const slot = timeSlots.find((s) => s.id === hours);
+    if (!slot) return;
+    const [h, m] = slot.time.split(":");
+    const date = new Date(day);
+    date.setHours(Number(h), Number(m), 0, 0);
+    setConfirmError("");
+    setConfirmLoading(true);
+    createAppointmentService(
+      user.id,
+      barber,
+      date.toISOString(),
+      () => { setConfirmLoading(false); setConfirmed(true); },
+      (err) => { setConfirmLoading(false); setConfirmError(err.message); }
+    );
+  };
 
   const openModal = () => {
     setView("login");
@@ -41,7 +62,21 @@ function AppointmentForm({
   const handleLoginSuccess = (token) => {
     login(token);
     closeModal();
-    setConfirmed(true);
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    const slot = timeSlots.find((s) => s.id === hours);
+    if (!slot) return;
+    const [h, m] = slot.time.split(":");
+    const date = new Date(day);
+    date.setHours(Number(h), Number(m), 0, 0);
+    setConfirmError("");
+    setConfirmLoading(true);
+    createAppointmentService(
+      decoded.id,
+      barber,
+      date.toISOString(),
+      () => { setConfirmLoading(false); setConfirmed(true); },
+      (err) => { setConfirmLoading(false); setConfirmError(err.message); }
+    );
   };
 
   const handleRegisterSuccess = () => {
@@ -60,6 +95,12 @@ function AppointmentForm({
         </div>
         <div className="text-light mb-1">Horario: {selectedHour.time}</div>
 
+        {confirmError && (
+          <div className="alert alert-danger py-2 mt-3" style={{ fontSize: "0.85rem" }}>
+            {confirmError}
+          </div>
+        )}
+
         {confirmed ? (
           <div className="btn btn-success text-white mt-3 w-100 disabled">
             ¡Turno confirmado!
@@ -67,9 +108,10 @@ function AppointmentForm({
         ) : (
           <button
             className="btn btn-warning text-dark mt-3 w-100"
-            onClick={openModal}
+            onClick={handleConfirm}
+            disabled={confirmLoading}
           >
-            Confirmar Turno
+            {confirmLoading ? "Confirmando..." : "Confirmar Turno"}
           </button>
         )}
       </div>
