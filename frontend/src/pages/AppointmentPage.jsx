@@ -1,4 +1,4 @@
-import Navbar from "../components/Navbar/Navbar";
+import Layout from "../components/Layout/Layout";
 import AppointmentForm from "../components/AppointmentForm/AppointmentForm";
 import BarberCard from "../components/BarberCard/BarberCard";
 import BarberList from "../components/BarberList/BarberList";
@@ -50,8 +50,8 @@ function AppointmentPage() {
   }); // filtro los barberos segun la sucursal seleccionada antes
 
   return (
+    <Layout>
     <div className="appointment-page-bg page-transition">
-      <Navbar></Navbar>
       <hr className="border-warning opacity-50" />
       <Button variant="outline-warning" onClick={() => navigate("/")}>
         Ir al inicio
@@ -99,6 +99,7 @@ function AppointmentPage() {
         />
       )}
     </div>
+    </Layout>
   );
 }
 

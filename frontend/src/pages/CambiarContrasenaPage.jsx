@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthContext";
 import { changePasswordService } from "../components/auth/account.services";
-import Navbar from "../components/Navbar/Navbar";
+import Layout from "../components/Layout/Layout";
 
 function CambiarContrasenaPage() {
   const { user } = useAuth();
@@ -16,9 +16,8 @@ function CambiarContrasenaPage() {
 
   if (!user) {
     return (
-      <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
-        <Navbar />
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+      <Layout>
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
           <div className="text-center">
             <p className="text-warning mb-3">Debés iniciar sesión para acceder a esta sección.</p>
             <button className="btn btn-warning text-dark" onClick={() => navigate("/login")}>
@@ -26,7 +25,7 @@ function CambiarContrasenaPage() {
             </button>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
@@ -61,11 +60,10 @@ function CambiarContrasenaPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
-      <Navbar />
+    <Layout>
       <div
         className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: "100vh", paddingTop: "80px" }}
+        style={{ minHeight: "80vh", paddingTop: "80px" }}
       >
         <div
           className="card bg-dark border-warning p-4"
@@ -125,7 +123,7 @@ function CambiarContrasenaPage() {
           </form>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 

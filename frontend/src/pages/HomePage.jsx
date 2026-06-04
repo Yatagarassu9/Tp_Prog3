@@ -1,6 +1,6 @@
 import "../styles/home.css";
 import "../styles/animations.css";
-import Navbar from "../components/Navbar/Navbar";
+import Layout from "../components/Layout/Layout";
 import { useNavigate } from "react-router";
 import useBranches from "../hooks/useBranches.js";
 import StatCounter from "../components/StatCounter/StatCounter";
@@ -11,8 +11,8 @@ function HomePage() {
   const branches = useBranches();
 
   return (
+    <Layout>
     <div className="home-container page-transition">
-      <Navbar />
       <section id="hero" className="hero">
         <img
           src="/images/LogoHomePage-removebg.png"
@@ -108,6 +108,7 @@ function HomePage() {
         </div>
       </section>
     </div>
+    </Layout>
   );
 }
 

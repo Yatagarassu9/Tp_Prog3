@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Login from "../components/auth/Login";
 import Register from "../components/auth/Register";
 import { useState } from "react";
-import Navbar from "../components/Navbar/Navbar";
+import Layout from "../components/Layout/Layout";
 
 function LoginPage() {
   const { user, login } = useAuth();
@@ -25,11 +25,10 @@ function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
-      <Navbar />
+    <Layout>
       <div
         className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: "100vh", paddingTop: "80px" }}
+        style={{ minHeight: "80vh", paddingTop: "80px" }}
       >
         <div
           className="card bg-dark border-warning p-4"
@@ -53,7 +52,7 @@ function LoginPage() {
           )}
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 

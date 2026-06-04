@@ -6,7 +6,7 @@ import {
   cancelAppointmentService,
   updateAppointmentService,
 } from "../components/auth/account.services";
-import Navbar from "../components/Navbar/Navbar";
+import Layout from "../components/Layout/Layout";
 import timeSlots from "../data/timeSlots";
 
 const STATUS_LABELS = {
@@ -119,9 +119,8 @@ function MisTurnosPage() {
 
   if (!user) {
     return (
-      <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
-        <Navbar />
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+      <Layout>
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
           <div className="text-center">
             <p className="text-warning mb-3">Debés iniciar sesión para ver tus turnos.</p>
             <button className="btn btn-warning text-dark" onClick={() => navigate("/login")}>
@@ -129,7 +128,7 @@ function MisTurnosPage() {
             </button>
           </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
@@ -142,8 +141,7 @@ function MisTurnosPage() {
   );
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "var(--bg-primary)" }}>
-      <Navbar />
+    <Layout>
       <div style={{ paddingTop: "100px", paddingBottom: "40px", maxWidth: "700px", margin: "0 auto", padding: "100px 20px 40px" }}>
         <button
           className="btn btn-outline-secondary btn-sm mb-4"
@@ -287,7 +285,7 @@ function MisTurnosPage() {
           </>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }
 

@@ -1,6 +1,11 @@
+import Layout from "../components/Layout/Layout";
+
 function BarberDashboardPage() {
-    return(
-        <h1>Dashboard del barbero</h1>
-    );
+  return (
+    <Layout>
+      <h1>Dashboard del barbero</h1>
+    </Layout>
+  );
 }
+
 export default BarberDashboardPage;
