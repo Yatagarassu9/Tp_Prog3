@@ -1,4 +1,7 @@
-body {
-    background-color: #1a1a1a;
+html {
+  scroll-behavior: smooth;
 }
 
+body {
+  background-color: #131313 !important;
+}

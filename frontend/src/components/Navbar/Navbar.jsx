@@ -1,14 +1,76 @@
-import 'bootstrap/dist/css/bootstrap.min.css' 
+import "../../styles/navbar.css";
+import { Link, useNavigate } from "react-router";
+import { useState, useRef, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 function Navbar() {
-    return (
-        <nav className='navbar navbar-dark bg-dark py-3'>
-            <div className='container text-center'>
-                <a className='navbar-brand fw-bold fs-3'>Barbería Craneo Barbero</a>
-                <p className='text-warning mb-0' style={{fontSize: '0.8rem', letterSpacing: '3px'}}>Barbería & Estilo</p>
-            </div>
-        </nav>
-    )
+  const { user, logout } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    setDropdownOpen(false);
+    navigate("/");
+  };
+
+  const closeDropdown = () => setDropdownOpen(false);
+
+  return (
+    <nav className="custom-navbar">
+      <div className="navbar-brand">
+        <span className="navbar-title">Barbería Cráneo Barbero</span>
+      </div>
+      <div className="navbar-links">
+        <a href="#hero">Inicio</a>
+        <a href="#branches">Sucursales</a>
+        <a href="#history">Nosotros</a>
+        <Link to="/appointment" className="navbar-cta">
+          Sacar turno
+        </Link>
+
+        {user ? (
+          <div className="navbar-account" ref={dropdownRef}>
+            <button
+              className="navbar-account-btn"
+              onClick={() => setDropdownOpen((v) => !v)}
+            >
+              Mi Cuenta <span className="navbar-chevron">{dropdownOpen ? "▴" : "▾"}</span>
+            </button>
+            {dropdownOpen && (
+              <div className="navbar-dropdown">
+                <Link to="/mi-cuenta/cambiar-contrasena" onClick={closeDropdown}>
+                  Cambiar contraseña
+                </Link>
+                <Link to="/mi-cuenta/mis-turnos" onClick={closeDropdown}>
+                  Modificar turno
+                </Link>
+                <Link to="/mi-cuenta/mis-turnos" onClick={closeDropdown}>
+                  Cancelar turno
+                </Link>
+                <button className="navbar-dropdown-logout" onClick={handleLogout}>
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <Link to="/login">Iniciar sesión</Link>
+        )}
+      </div>
+    </nav>
+  );
 }
 
-export default Navbar
+export default Navbar;

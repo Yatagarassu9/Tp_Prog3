@@ -50,21 +50,23 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
 
   return (
     <div className="mt-4">
-      <h5 className="text-warning mb-3 text-dark">Elegí un día:</h5>
+      <h5 className="text-white p-2 rounded mb-3 d-inline-block">
+        Elegí un día:
+      </h5>
       <div className="d-flex align-items-center gap-3 mb-3">
         <button
-          className="btn btn-outline-warning m-1 text-dark"
+          className="btn btn-outline-warning m-1 text-white"
           onClick={prevMonth}
         >
           {"<"}
         </button>
 
-        <span>
+        <span className="bg-dark text-white">
           {MONTHS[month]} {year}
         </span>
 
         <button
-          className="btn btn-outline-warning m-1 text-dark"
+          className="btn btn-outline-warning m-1 text-white"
           onClick={nextMonth}
         >
           {">"}
@@ -77,7 +79,9 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
       >
         {/* divide el contenedor en 7 columnas de igual tamaño. 1fr es fraccion del espacio disponible */}
         {["Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"].map((day) => (
-          <div className="text-warning text-center fw-bold" key={day}>{day}</div>
+          <div className="text-warning text-center fw-bold" key={day}>
+            {day}
+          </div>
         ))}
 
         {[...Array(offset)].map((_, i) => (
@@ -97,8 +101,8 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
             <button
               className={
                 selected
-                  ? "btn btn-warning text-dark w-100 p-1"
-                  : "btn btn-outline-warning text-dark w-100 p-1"
+                  ? "btn btn-warning text-white w-100 p-3"
+                  : "btn btn-dark text-white w-100 p-3"
               }
               key={day}
               disabled={disabled}

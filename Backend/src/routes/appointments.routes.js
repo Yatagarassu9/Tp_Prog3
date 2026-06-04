@@ -5,7 +5,8 @@ import {
   getAppointmentById,
   createAppointment,
   updateAppointment,
-  deleteAppointment
+  deleteAppointment,
+  getAppointmentsByClientId
 } from "../services/appointment.service.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -15,7 +16,7 @@ import { roleMiddleware } from "../middlewares/role.middleware.js";
 const router = Router();
 
 
-// 🔍 obtener todos los turnos
+// obtener todos los turnos
 router.get(
   "/",
   authMiddleware,
@@ -42,7 +43,33 @@ router.get(
 );
 
 
-// 🔍 obtener turno por id
+// obtener turnos del usuario autenticado
+router.get(
+  "/my",
+  authMiddleware,
+
+  async (req, res) => {
+
+    try {
+
+      const appointments =
+        await getAppointmentsByClientId(req.user.id);
+
+      res.json(appointments);
+
+    } catch (error) {
+
+      res.status(500).json({
+        error: error.message
+      });
+
+    }
+
+  }
+);
+
+
+// obtener turno por id
 router.get(
   "/:id",
   authMiddleware,
@@ -70,7 +97,7 @@ router.get(
 );
 
 
-// ➕ crear turno
+// crear turno
 router.post(
   "/",
   authMiddleware,
@@ -101,7 +128,7 @@ router.post(
 );
 
 
-// ✏️ actualizar turno
+// actualizar turno
 router.put(
   "/:id",
   authMiddleware,
@@ -130,7 +157,7 @@ router.put(
 );
 
 
-// ❌ eliminar turno
+// eliminar turno
 router.delete(
   "/:id",
   authMiddleware,

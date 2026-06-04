@@ -1,65 +1,52 @@
 import User from "./user.js";
 import Cut from "./cut.js";
 import Appointment from "./appointment.js";
+import Branch from "./branch.js";
 
-
-// 🔗 relaciones
+// relaciones
 
 // cliente
-Appointment.belongsTo(
-  User,
-  {
-    as: "client",
-    foreignKey: "clientId"
-  }
-);
+Appointment.belongsTo(User, {
+  as: "client",
+  foreignKey: "clientId",
+});
 
-User.hasMany(
-  Appointment,
-  {
-    as: "clientAppointments",
-    foreignKey: "clientId"
-  }
-);
-
+User.hasMany(Appointment, {
+  as: "clientAppointments",
+  foreignKey: "clientId",
+});
 
 // barbero
-Appointment.belongsTo(
-  User,
-  {
-    as: "barber",
-    foreignKey: "barberId"
-  }
-);
+Appointment.belongsTo(User, {
+  as: "barber",
+  foreignKey: "barberId",
+});
 
-User.hasMany(
-  Appointment,
-  {
-    as: "barberAppointments",
-    foreignKey: "barberId"
-  }
-);
-
+User.hasMany(Appointment, {
+  as: "barberAppointments",
+  foreignKey: "barberId",
+});
 
 // corte
-Appointment.belongsTo(
-  Cut,
-  {
-    foreignKey: "cutId"
-  }
-);
+Appointment.belongsTo(Cut, {
+  foreignKey: "cutId",
+});
 
-Cut.hasMany(
-  Appointment,
-  {
-    foreignKey: "cutId"
-  }
-);
+Cut.hasMany(Appointment, {
+  foreignKey: "cutId",
+});
+
+// branch se relaciona con user (barber)
+Branch.hasMany(User, {
+  foreignKey: "branchId",
+});
+
+User.belongsTo(Branch, {
+  foreignKey: "branchId",
+});
+
+// branch se relacion con appointment desde Barber, por lo tanto
+// no creamos esa relacion redundante
 
 
-// 🔥 EXPORTS
-export {
-  User,
-  Cut,
-  Appointment
-};
+export { User, Cut, Appointment, Branch };
