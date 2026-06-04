@@ -33,12 +33,11 @@ function Navbar() {
         <span className="navbar-title">Barbería Cráneo Barbero</span>
       </div>
       <div className="navbar-links">
-        <a href="#hero">Inicio</a>
-        <a href="#branches">Sucursales</a>
-        <a href="#history">Nosotros</a>
         <Link to="/appointment" className="navbar-cta">
           Sacar turno
         </Link>
+        <Link to="/">Inicio</Link>
+        <Link to="/nosotros">Nosotros</Link>
 
         {user ? (
           <div className="navbar-account" ref={dropdownRef}>
@@ -50,14 +49,8 @@ function Navbar() {
             </button>
             {dropdownOpen && (
               <div className="navbar-dropdown">
-                <Link to="/mi-cuenta/cambiar-contrasena" onClick={closeDropdown}>
-                  Cambiar contraseña
-                </Link>
                 <Link to="/mi-cuenta/mis-turnos" onClick={closeDropdown}>
                   Modificar turno
-                </Link>
-                <Link to="/mi-cuenta/mis-turnos" onClick={closeDropdown}>
-                  Cancelar turno
                 </Link>
                 <button className="navbar-dropdown-logout" onClick={handleLogout}>
                   Cerrar sesión
