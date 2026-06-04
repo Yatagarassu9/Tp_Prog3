@@ -1,33 +1,27 @@
-import {
-  Appointment,
-  User,
-  Cut
-} from "../models/relations.js";
-
+import { Appointment, User, Cut } from "../models/relations.js";
 
 // obtener todos los turnos
-export const getAppointments = async () => {
+export const getAppointments = async (barberId = null) => {
+  const where = barberId ? { barberId } : {};
 
   return await Appointment.findAll({
+    where,
     include: [
       { model: User, as: "client" },
       { model: User, as: "barber" },
-      { model: Cut }
-    ]
+      { model: Cut },
+    ],
   });
-
 };
-
 
 //  obtener turno por id
 export const getAppointmentById = async (id) => {
-
   const appointment = await Appointment.findByPk(id, {
     include: [
       { model: User, as: "client" },
       { model: User, as: "barber" },
-      { model: Cut }
-    ]
+      { model: Cut },
+    ],
   });
 
   if (!appointment) {
@@ -35,120 +29,80 @@ export const getAppointmentById = async (id) => {
   }
 
   return appointment;
-
 };
-
 
 //  crear turno
 export const createAppointment = async (data) => {
-
   // validar fecha
-  const selectedDate = new Date(
-    data.appointmentDate
-  );
+  const selectedDate = new Date(data.appointmentDate);
 
   if (selectedDate < new Date()) {
-    throw new Error(
-      "Invalid appointment date"
-    );
+    throw new Error("Invalid appointment date");
   }
 
   // validar barber
-  const barber = await User.findByPk(
-    data.barberId
-  );
+  const barber = await User.findByPk(data.barberId);
 
-  if (
-    !barber ||
-    barber.role !== "barber"
-  ) {
+  if (!barber || barber.role !== "barber") {
     throw new Error("Invalid barber");
   }
 
   // validar client
-  const client = await User.findByPk(
-    data.clientId
-  );
+  const client = await User.findByPk(data.clientId);
 
-  if (
-    !client ||
-    client.role !== "client"
-  ) {
+  if (!client || client.role !== "client") {
     throw new Error("Invalid client");
   }
 
   // validar turno duplicado
   const exists = await Appointment.findOne({
     where: {
-      appointmentDate:
-        data.appointmentDate,
+      appointmentDate: data.appointmentDate,
 
-      barberId:
-        data.barberId
-    }
+      barberId: data.barberId,
+    },
   });
 
   if (exists) {
-    throw new Error(
-      "This appointment is already booked"
-    );
+    throw new Error("This appointment is already booked");
   }
 
   return await Appointment.create(data);
-
 };
 
-
 // actualizar turno
-export const updateAppointment = async (
-  id,
-  data
-) => {
-
-  const appointment =
-    await Appointment.findByPk(id);
+export const updateAppointment = async (id, data) => {
+  const appointment = await Appointment.findByPk(id);
 
   if (!appointment) {
-    throw new Error(
-      "Appointment not found"
-    );
+    throw new Error("Appointment not found");
   }
 
   return await appointment.update(data);
-
 };
 
-
 //  eliminar turno
-export const deleteAppointment = async (
-  id
-) => {
-
-  const appointment =
-    await Appointment.findByPk(id);
+export const deleteAppointment = async (id) => {
+  const appointment = await Appointment.findByPk(id);
 
   if (!appointment) {
-    throw new Error(
-      "Appointment not found"
-    );
+    throw new Error("Appointment not found");
   }
 
   return await appointment.destroy();
-
 };
 
-
 // obtener turnos por cliente
-export const getAppointmentsByClientId = async (clientId) => {
+// hacer fetch para conectar el appointment con el user
 
+export const getAppointmentsByClientId = async (clientId) => {
   return await Appointment.findAll({
     where: { clientId },
     include: [
       { model: User, as: "client" },
       { model: User, as: "barber" },
-      { model: Cut }
+      { model: Cut },
     ],
-    order: [["appointmentDate", "DESC"]]
+    order: [["appointmentDate", "DESC"]],
   });
-
 };
