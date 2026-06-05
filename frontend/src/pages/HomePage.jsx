@@ -8,7 +8,7 @@ function HomePage() {
 
   return (
     <Layout>
-    <div className="home-container page-transition">
+    <div className="home-container  ">
       <section id="hero" className="hero">
         <img
           src="/images/LogoHomePage-removebg.png"
