@@ -8,3 +8,51 @@
 .layout-main {
   flex: 1;
 }
+
+.fab-appointment {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: var(--accent-primary);
+  color: #131313;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 17px;
+  gap: 8px;
+  font-size: 1.6rem;
+  box-shadow: 0 4px 16px rgba(255, 200, 49, 0.4);
+  overflow: hidden;
+  transition: width 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fab-appointment:hover {
+  width: 175px;
+  box-shadow: 0 6px 24px rgba(255, 200, 49, 0.6);
+}
+
+.fab-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.2s ease 0.1s, transform 0.2s ease 0.1s;
+  pointer-events: none;
+}
+
+.fab-appointment:hover .fab-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fab-appointment:hover .ti-scissors {
+  transform: rotate(-20deg);
+  transition: transform 0.3s ease;
+}
