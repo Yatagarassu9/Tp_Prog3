@@ -12,8 +12,12 @@ function NosotrosPage() {
 
   return (
     <Layout>
-      <div className="home-container page-transition">
-        <section id="branches" className="branches" style={{ paddingTop: "120px" }}>
+      <div className="home-container">
+        <section
+          id="branches"
+          className="branches"
+          style={{ paddingTop: "120px" }}
+        >
           <span className="section-label">Dónde encontrarnos</span>
           <h2 className="section-title">Nuestras sucursales</h2>
           <div className="branches-grid">
@@ -62,7 +66,8 @@ function NosotrosPage() {
               </p>
               <p>
                 Cada sucursal mantiene el espíritu del primer local: atención
-                personalizada, ambiente relajado y cortes que hablan por sí solos.
+                personalizada, ambiente relajado y cortes que hablan por sí
+                solos.
               </p>
               <div className="history-timeline">
                 <div className="timeline-item">

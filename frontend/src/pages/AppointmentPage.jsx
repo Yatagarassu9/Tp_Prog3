@@ -51,7 +51,7 @@ function AppointmentPage() {
 
   return (
     <Layout>
-    <div className="appointment-page-bg page-transition">
+    <div className="appointment-page-bg  ">
       <hr className="border-warning opacity-50" />
       {/* <Button variant="outline-warning" onClick={() => navigate("/")}>
         Ir al inicio

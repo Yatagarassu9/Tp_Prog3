@@ -9,7 +9,7 @@ function Layout({ children }) {
   const showFab = location.pathname !== "/appointment";
 
   return (
-    <div className="layout">
+    <div className="layout page-transition">
       <Navbar />
       <main className="layout-main">{children}</main>
       <Footer />

@@ -6,13 +6,23 @@ import LoginPage from "./pages/LoginPage";
 import CambiarContrasenaPage from "./pages/CambiarContrasenaPage";
 import MisTurnosPage from "./pages/MisTurnosPage";
 import NosotrosPage from "./pages/NosotrosPage";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router";
 import { AuthProvider } from "./context/AuthContext";
+import { useEffect } from "react";
+
+function ScrollToTop() {//cada vez que cambiamos de pagina(ruta) nos manda arriba de la pagina
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/nosotros" element={<NosotrosPage />} />

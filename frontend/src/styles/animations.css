@@ -69,6 +69,6 @@ z-index: -1           - pone el elemento detrás del texto del botón
   }
 }
 
-.page-transition {
+.page-transition  {
   animation: page-enter 0.3s ease;
 }
