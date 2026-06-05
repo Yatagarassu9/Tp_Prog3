@@ -53,9 +53,9 @@ function AppointmentPage() {
     <Layout>
     <div className="appointment-page-bg page-transition">
       <hr className="border-warning opacity-50" />
-      <Button variant="outline-warning" onClick={() => navigate("/")}>
+      {/* <Button variant="outline-warning" onClick={() => navigate("/")}>
         Ir al inicio
-      </Button>
+      </Button> */}
       <BranchSelector
         branches={branches}
         /* branches.js - (import) - AppointmentPage - (prop) - BranchSelector */

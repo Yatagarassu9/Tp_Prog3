@@ -1,4 +1,5 @@
 import { User } from "../models/relations.js";
+import bcrypt from "bcryptjs";
 
 export const getBarbers = async () => {
   return await User.findAll({
@@ -17,16 +18,21 @@ export const getBarberById = async (id) => {
 };
 
 export const createBarber = async (data) => {
+  const hashedPassword = await bcrypt.hash(data.password, 10);
+
   return await User.create({
     ...data,
     role: "barber",
-    password: "sin-password",
+    password: hashedPassword,
   });
 };
 
 export const updateBarber = async (id, data) => {
   const barber = await User.findByPk(id);
   if (!barber) throw new Error("Barber not found");
+  if (data.password) {
+    data = { ...data, password: await bcrypt.hash(data.password, 10) };
+  }
   return await barber.update(data);
 };
 
