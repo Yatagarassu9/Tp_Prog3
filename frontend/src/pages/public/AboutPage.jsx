@@ -1,19 +1,28 @@
-import "../styles/home.css";
-import "../styles/animations.css";
-import Layout from "../components/Layout/Layout";
+import "../../styles/home.css";
+import "../../styles/animations.css";
+import Layout from "../../components/Layout/Layout.jsx";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import useBranches from "../hooks/useBranches.js";
-import StatCounter from "../components/StatCounter/StatCounter";
-import stats from "../data/stats";
+import useBranches from "../../hooks/useBranches.js";
+import StatCounter from "../../components/StatCounter/StatCounter.jsx";
+import stats from "../../data/stats.js";
 
-function NosotrosPage() {
+function AboutPage() {
   const navigate = useNavigate();
   const branches = useBranches();
+
+useEffect(() => {
+  document.title = " Nosotros | Cráneo Barbero";
+}, []);
 
   return (
     <Layout>
       <div className="home-container page-transition">
-        <section id="branches" className="branches" style={{ paddingTop: "120px" }}>
+        <section
+          id="branches"
+          className="branches"
+          style={{ paddingTop: "120px" }}
+        >
           <span className="section-label">Dónde encontrarnos</span>
           <h2 className="section-title">Nuestras sucursales</h2>
           <div className="branches-grid">
@@ -62,7 +71,8 @@ function NosotrosPage() {
               </p>
               <p>
                 Cada sucursal mantiene el espíritu del primer local: atención
-                personalizada, ambiente relajado y cortes que hablan por sí solos.
+                personalizada, ambiente relajado y cortes que hablan por sí
+                solos.
               </p>
               <div className="history-timeline">
                 <div className="timeline-item">
@@ -86,4 +96,4 @@ function NosotrosPage() {
   );
 }
 
-export default NosotrosPage;
+export default AboutPage;

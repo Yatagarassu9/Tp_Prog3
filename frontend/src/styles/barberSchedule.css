@@ -1,0 +1,58 @@
+@import "./variables.css";
+
+.week-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.week-arrow {
+  background: transparent;
+  border: 1px solid rgba(255, 200, 49, 0.3);
+  color: var(--accent-primary);
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.week-arrow:hover {
+  background: rgba(255, 200, 49, 0.1);
+}
+
+.week-label {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  min-width: 160px;
+  text-align: center;
+}
+
+.stat-card-single {
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.agenda-day-past .agenda-day-title span {
+  opacity: 0.4;
+}
+
+.agenda-day-past .agenda-day-line {
+  opacity: 0.25;
+}
+
+.agenda-day-past .no-appointments-day,
+.agenda-day-past .agenda-row {
+  opacity: 0.35;
+}
+
+.agenda-row-past {
+  opacity: 0.35;
+}

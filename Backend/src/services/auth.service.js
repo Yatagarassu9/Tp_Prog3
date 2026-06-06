@@ -21,7 +21,8 @@ export const loginUser = async (email, password) => {
   const token = jwt.sign(
     {
       id: user.id,
-      role: user.role
+      role: user.role,
+      name: user.name, // jwt necesario para filtrar los barbers en su dashboard
     },
     process.env.JWT_SECRET,
     {

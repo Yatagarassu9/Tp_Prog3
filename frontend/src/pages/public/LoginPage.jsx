@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "../context/AuthContext";
-import Login from "../components/auth/Login";
-import Register from "../components/auth/Register";
+import { useAuth } from "../../context/AuthContext";
+import Login from "../../components/auth/Login";
+import Register from "../../components/auth/Register";
 import { useState } from "react";
-import Layout from "../components/Layout/Layout";
+import Layout from "../../components/Layout/Layout";
 
 function LoginPage() {
   const { user, login } = useAuth();

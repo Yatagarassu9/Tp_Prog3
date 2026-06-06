@@ -1,14 +1,17 @@
 import "../../styles/navbar.css";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLocation } from "react-router";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 function Navbar() {
   const { user, logout } = useAuth();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false); // lo usamos para la flechita de mi cuenta
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const isActive = (path) =>
+    location.pathname === path ? "navbar-link-active" : "";
+  //  compara la ruta actual con el link
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -33,26 +36,59 @@ function Navbar() {
         <span className="navbar-title">Barbería Cráneo Barbero</span>
       </div>
       <div className="navbar-links">
-        <Link to="/appointment" className="navbar-cta">
-          Sacar turno
-        </Link>
-        <Link to="/">Inicio</Link>
-        <Link to="/nosotros">Nosotros</Link>
+        {/* Acá se ve si no hay usuario o cliente logueado. Si no inició sesion se muestra la navbar común */}
+        {(!user || user.role === "client") && (
+          <>
+            <Link to="/appointment" className="navbar-cta">
+              Sacar turno
+            </Link>
+            <Link to="/">Inicio</Link>
+            <Link to="/about">Nosotros</Link>
+          </>
+        )}
 
-        {user ? (
+        {/* Se ve si el usuario logueado es barbero */}
+        {user?.role === "barber" && (
+          <>
+            <Link to="/barber" className={isActive("/barber")}>
+              Inicio
+            </Link>
+            <Link
+              to="/barber/schedule"
+              className={isActive("/barber/schedule")}
+            >
+              Mi agenda
+            </Link>
+          </>
+        )}
+
+        {/* Sección de autenticación, cambia segun quien sea */}
+        {user?.role === "barber" ? (
+          <div className="navbar-barber-session">
+            <span className="navbar-barber-name">{user.name}</span>
+            <button className="navbar-barber-logout" onClick={handleLogout}>
+              Cerrar sesión
+            </button>
+          </div>
+        ) : user ? (
           <div className="navbar-account" ref={dropdownRef}>
             <button
               className="navbar-account-btn"
               onClick={() => setDropdownOpen((v) => !v)}
             >
-              Mi Cuenta <span className="navbar-chevron">{dropdownOpen ? "▴" : "▾"}</span>
+              Mi Cuenta{" "}
+              <span className="navbar-chevron">{dropdownOpen ? "▴" : "▾"}</span>
             </button>
-            {dropdownOpen && (
+            {dropdownOpen && ( // si dropdownOpen = true, despliega el menu
               <div className="navbar-dropdown">
-                <Link to="/mi-cuenta/mis-turnos" onClick={closeDropdown}>
-                  Modificar turno
+                <Link to="/my-account/appointments" onClick={closeDropdown}>
+                  Mis turnos
                 </Link>
-                <button className="navbar-dropdown-logout" onClick={handleLogout}>
+
+                <button
+                  className="navbar-dropdown-logout"
+                  onClick={handleLogout}
+                >
                   Cerrar sesión
                 </button>
               </div>

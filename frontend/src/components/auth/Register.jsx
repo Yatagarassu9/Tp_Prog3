@@ -140,7 +140,7 @@ const Register = ({ onRegister, onCancel }) => {
 
             <div className="d-flex gap-2">
                 <button type="button" className="btn btn-outline-secondary w-100" onClick={onCancel} disabled={loading}>
-                    Volver al login
+                    Cancelar
                 </button>
                 <button type="submit" className="btn btn-warning text-dark w-100" disabled={loading}>
                     {loading ? "Creando cuenta..." : "Crear cuenta"}

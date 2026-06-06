@@ -1,5 +1,5 @@
 import "../../styles/footer.css";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 function Footer() {
   return (
@@ -14,9 +14,8 @@ function Footer() {
 
         <div className="footer-links">
           <h4 className="footer-section-title">Navegación</h4>
-          <a href="#hero">Inicio</a>
-          <a href="#branches">Sucursales</a>
-          <a href="#history">Nosotros</a>
+          <Link to="/">Inicio</Link>
+          <Link to="/about">Nosotros</Link>
           <Link to="/appointment">Sacar turno</Link>
         </div>
 
