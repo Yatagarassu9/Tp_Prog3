@@ -1,9 +1,11 @@
 import "../../styles/layout.css";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";
+import { useAuth } from "../../context/AuthContext";
 
 function Layout({ children }) {
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const showFab = location.pathname !== "/appointment";
@@ -12,7 +14,7 @@ function Layout({ children }) {
     <div className="layout page-transition">
       <Navbar />
       <main className="layout-main">{children}</main>
-      <Footer />
+      {user?.role !== "barber" && <Footer />}
       {showFab && (
         <button
           className="fab-appointment"

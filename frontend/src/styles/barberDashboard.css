@@ -1,0 +1,215 @@
+@import "./variables.css";
+
+
+.barber-dashboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 120px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* ===== STATS ===== */
+.barber-stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px;
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 200, 49, 0.2);
+  border-radius: 14px;
+  box-shadow:
+    0 0 24px rgba(255, 200, 49, 0.08),
+    inset 0 0 12px rgba(255, 200, 49, 0.03);
+}
+
+.stat-value {
+  color: var(--accent-primary);
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+
+/* ===== PRÓXIMO TURNO ===== */
+.next-card {
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 200, 49, 0.2);
+  border-radius: 14px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  box-shadow: 0 0 24px rgba(255, 200, 49, 0.08);
+}
+
+.next-time {
+  color: var(--accent-primary);
+  font-size: 2.8rem;
+  font-weight: 700;
+  min-width: 110px;
+}
+
+.next-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.next-client {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.next-service {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.next-badge {
+  background: rgba(255, 200, 49, 0.12);
+  border: 1px solid rgba(255, 200, 49, 0.35);
+  color: var(--accent-primary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.no-appointments {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ===== AGENDA ===== */
+.agenda-day {
+  margin-bottom: 32px;
+}
+
+.agenda-day-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+}
+
+.agenda-day-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.no-appointments-day {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.agenda-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: background 0.15s;
+}
+
+.agenda-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.agenda-row-next {
+  background: rgba(255, 200, 49, 0.07);
+  border: 1px solid rgba(255, 200, 49, 0.2);
+}
+
+.agenda-time {
+  color: var(--accent-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  min-width: 52px;
+}
+
+.agenda-client {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.agenda-service {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  min-width: 130px;
+}
+
+.agenda-actions {
+  display: flex;
+  gap: 8px;
+  min-width: 160px;
+  justify-content: flex-end;
+}
+
+.btn-agenda-edit {
+  background: transparent;
+  border: 1px solid rgba(255, 200, 49, 0.4);
+  color: var(--accent-primary);
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btn-agenda-edit:hover {
+  background: rgba(255, 200, 49, 0.1);
+}
+
+.btn-agenda-cancel {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  color: #ff6b6b;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+
+.btn-agenda-cancel:hover {
+  background: rgba(255, 107, 107, 0.08);
+}
+
+.agenda-row-past {
+  opacity: 0.35;
+}

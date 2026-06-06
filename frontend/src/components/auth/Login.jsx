@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { loginService } from "./auth.services";
 
 const Login = ({ onLogin, onCancel }) => {
@@ -52,6 +52,10 @@ const Login = ({ onLogin, onCancel }) => {
             }
         );
     };
+
+    useEffect(() => {
+  document.title = " Iniciar sesión | Cráneo Barbero";
+}, []);
 
     return (
         <form onSubmit={handleLogin}>

@@ -1,18 +1,23 @@
-import "../styles/home.css";
-import "../styles/animations.css";
-import Layout from "../components/Layout/Layout";
+import "../../styles/home.css";
+import "../../styles/animations.css";
+import Layout from "../../components/Layout/Layout.jsx";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import useBranches from "../hooks/useBranches.js";
-import StatCounter from "../components/StatCounter/StatCounter";
-import stats from "../data/stats";
+import useBranches from "../../hooks/useBranches.js";
+import StatCounter from "../../components/StatCounter/StatCounter.jsx";
+import stats from "../../data/stats.js";
 
-function NosotrosPage() {
+function AboutPage() {
   const navigate = useNavigate();
   const branches = useBranches();
 
+  useEffect(() => {
+    document.title = " Nosotros | Cráneo Barbero";
+  }, []);
+
   return (
     <Layout>
-      <div className="home-container">
+      <div className="home-container page-transition">
         <section
           id="branches"
           className="branches"
@@ -91,4 +96,4 @@ function NosotrosPage() {
   );
 }
 
-export default NosotrosPage;
+export default AboutPage;

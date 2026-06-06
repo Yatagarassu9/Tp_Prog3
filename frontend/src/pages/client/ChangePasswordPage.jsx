@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "../context/AuthContext";
-import { changePasswordService } from "../components/auth/account.services";
-import Layout from "../components/Layout/Layout";
+import { useAuth } from "../../context/AuthContext";
+import { changePasswordService } from "../../components/auth/account.services";
+import Layout from "../../components/Layout/Layout";
 
-function CambiarContrasenaPage() {
+function ChangePasswordPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -13,6 +13,10 @@ function CambiarContrasenaPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+  document.title = " Cambiar contraseña | Cráneo Barbero";
+}, []);
 
   if (!user) {
     return (
@@ -127,4 +131,4 @@ function CambiarContrasenaPage() {
   );
 }
 
-export default CambiarContrasenaPage;
+export default ChangePasswordPage;

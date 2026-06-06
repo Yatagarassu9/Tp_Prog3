@@ -169,3 +169,38 @@
 .navbar-dropdown-logout:hover {
   background-color: rgba(255, 107, 107, 0.1);
 }
+
+/* Link activo del barbero */
+.navbar-link-active {
+  background: rgba(255, 195, 0, 0.12);
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+/* Sesión del barbero: nombre + logout */
+.navbar-barber-session {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.navbar-barber-name {
+  color: #ccc;
+  font-size: 0.9rem;
+}
+
+.navbar-barber-logout {
+  background: transparent;
+  border: 1px solid rgba(255, 195, 0, 0.4);
+  color: var(--accent-primary);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.navbar-barber-logout:hover {
+  background: rgba(255, 195, 0, 0.1);
+}
