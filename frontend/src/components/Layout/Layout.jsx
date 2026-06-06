@@ -1,19 +1,25 @@
 import "../../styles/layout.css";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, Outlet } from "react-router";
 import Navbar from "../Navbar/Navbar";
 import Footer from "../Footer/Footer";
 import { useAuth } from "../../context/AuthContext";
 
-function Layout({ children }) {
+function Layout() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const showFab = location.pathname !== "/appointment";
+  const showFab =
+    !location.pathname.startsWith("/barber") &&
+    location.pathname !== "/appointment";
+  // oculta el boton flotante en rutas del barbero y en la pagina de sacar turno
+  // el startswith hace que las rutas que empiezan con /barber, no tengan el boton flotante
 
   return (
     <div className="layout page-transition">
       <Navbar />
-      <main className="layout-main">{children}</main>
+      <main className="layout-main">
+        <Outlet />
+      </main>
       {user?.role !== "barber" && <Footer />}
       {showFab && (
         <button

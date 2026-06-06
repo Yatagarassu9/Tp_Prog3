@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import { getBarberAppointmentsService } from "./barber.services";
-import Layout from "../../components/Layout/Layout";
+import AppointmentModal from "../../components/AppointmentModal/AppointmentModal";
 import "../../styles/barberDashboard.css";
 import "../../styles/barberSchedule.css";
+import "../../styles/appointmentModal.css";
 
 function BarberSchedulePage() {
   const [appointments, setAppointments] = useState([]);
   const [weekOffset, setWeekOffset] = useState(0);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   useEffect(() => {
-  document.title = " Mi agenda | Cráneo Barbero";
-}, []);
+    document.title = " Mi agenda | Cráneo Barbero";
+  }, []);
 
   useEffect(() => {
     getBarberAppointmentsService(
@@ -102,113 +104,119 @@ function BarberSchedulePage() {
   const weekLabel = `${formatShortDate(weekStart)} — ${formatShortDate(weekEnd)}`;
 
   return (
-    <Layout>
-      <div className="barber-dashboard">
-        {/* Selector de semana */}
-        <section className="week-selector">
-          <button
-            className="week-arrow"
-            onClick={() => setWeekOffset((o) => o - 1)}
-          >
-            <i className="ti ti-chevron-left" />
-          </button>
-          <span className="week-label">{weekLabel}</span>
-          <button
-            className="week-arrow"
-            onClick={() => setWeekOffset((o) => o + 1)}
-          >
-            <i className="ti ti-chevron-right" />
-          </button>
+    <div className="barber-dashboard page-transition">
+      {/* Selector de semana */}
+      <section className="week-selector">
+        <button
+          className="week-arrow"
+          onClick={() => setWeekOffset((o) => o - 1)}
+        >
+          <i className="ti ti-chevron-left" />
+        </button>
+        <span className="week-label">{weekLabel}</span>
+        <button
+          className="week-arrow"
+          onClick={() => setWeekOffset((o) => o + 1)}
+        >
+          <i className="ti ti-chevron-right" />
+        </button>
+      </section>
+
+      {/* Stats: 3 si es semana actual, 1 si es otra */}
+      {isCurrentWeek ? (
+        <section className="barber-stats">
+          <div className="stat-card">
+            <span className="stat-value">{weekAppointments.length}</span>
+            <span className="stat-label">Turnos esta semana</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-value">{weekPending.length}</span>
+            <span className="stat-label">Por atender</span>
+          </div>
+          <div className="stat-card">
+            <span className="stat-value">{weekAttended.length}</span>
+            <span className="stat-label">Ya atendidos</span>
+          </div>
         </section>
+      ) : (
+        <section className="barber-stats">
+          <div className="stat-card stat-card-single">
+            <span className="stat-value">{weekAppointments.length}</span>
+            <span className="stat-label">Turnos esta semana</span>
+          </div>
+        </section>
+      )}
 
-        {/* Stats: 3 si es semana actual, 1 si es otra */}
-        {isCurrentWeek ? (
-          <section className="barber-stats">
-            <div className="stat-card">
-              <span className="stat-value">{weekAppointments.length}</span>
-              <span className="stat-label">Turnos esta semana</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-value">{weekPending.length}</span>
-              <span className="stat-label">Por atender</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-value">{weekAttended.length}</span>
-              <span className="stat-label">Ya atendidos</span>
-            </div>
-          </section>
-        ) : (
-          <section className="barber-stats">
-            <div className="stat-card stat-card-single">
-              <span className="stat-value">{weekAppointments.length}</span>
-              <span className="stat-label">Turnos esta semana</span>
-            </div>
-          </section>
-        )}
+      {/* Agenda agrupada por día */}
+      <section className="barber-agenda">
+        {weekDays.map((day) => {
+          const dayAppointments = appointmentsForDay(day);
+          const isPastDay =
+            day.toDateString() !== now.toDateString() && isPast(day);
+          const isToday = day.toDateString() === now.toDateString();
 
-        {/* Agenda agrupada por día */}
-        <section className="barber-agenda">
-          {weekDays.map((day) => {
-            const dayAppointments = appointmentsForDay(day);
-            const isPastDay =
-              day.toDateString() !== now.toDateString() && isPast(day);
-            const isToday = day.toDateString() === now.toDateString();
-
-            return (
-              <div
-                key={day.toDateString()}
-                className={`agenda-day ${isPastDay ? "agenda-day-past" : ""}`} // usamos el css para tachar los dias
-              >
-                <div className="agenda-day-title">
-                  <span>{formatDayTitle(day)}</span>
-                  <div className="agenda-day-line" />
-                </div>
-                {dayAppointments.length === 0 ? (
-                  <p className="no-appointments-day">
-                    Todavía no hay turnos solicitados.
-                  </p>
-                ) : (
-                  dayAppointments.map((appointment) => {
-                    const isNext =
-                      isCurrentWeek && nextAppointment?.id === appointment.id;
-                    const isPassedAppointment =
-                      isToday && isPast(appointment.appointmentDate);
-                    return (
-                      <div
-                        key={appointment.id}
-                        className={`agenda-row ${isNext ? "agenda-row-next" : ""} ${isPassedAppointment ? "agenda-row-past" : ""}`}
-                      >
-                        <span className="agenda-time">
-                          {formatTime(appointment.appointmentDate)}
-                        </span>
-                        <span className="agenda-client">
-                          {appointment.client?.name}
-                        </span>
-                        <span className="agenda-service">
-                          {appointment.Cut?.name}
-                        </span>
-                        <div className="agenda-actions">
-                          {!isPassedAppointment && !isPastDay && (
-                            <>
-                              <button className="btn-agenda-edit">
-                                Modificar
-                              </button>
-                              <button className="btn-agenda-cancel">
-                                Cancelar
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
+          return (
+            <div
+              key={day.toDateString()}
+              className={`agenda-day ${isPastDay ? "agenda-day-past" : ""}`} // usamos el css para tachar los dias
+            >
+              <div className="agenda-day-title">
+                <span>{formatDayTitle(day)}</span>
+                <div className="agenda-day-line" />
               </div>
-            );
-          })}
-        </section>
-      </div>
-    </Layout>
+              {dayAppointments.length === 0 ? (
+                <p className="no-appointments-day">
+                  Todavía no hay turnos solicitados.
+                </p>
+              ) : (
+                dayAppointments.map((appointment) => {
+                  const isNext =
+                    isCurrentWeek && nextAppointment?.id === appointment.id;
+                  const isPassedAppointment =
+                    isToday && isPast(appointment.appointmentDate);
+                  return (
+                    <div
+                      key={appointment.id}
+                      className={`agenda-row ${isNext ? "agenda-row-next" : ""} ${isPassedAppointment ? "agenda-row-past" : ""}`}
+                    >
+                      <span className="agenda-time">
+                        {formatTime(appointment.appointmentDate)}
+                      </span>
+                      <span
+                        className="agenda-client"
+                        onClick={() => setSelectedAppointment(appointment)}
+                      >
+                        {appointment.client?.name}
+                      </span>
+
+                      <span className="agenda-service">
+                        {appointment.Cut?.name}
+                      </span>
+                      <div className="agenda-actions">
+                        {!isPassedAppointment && !isPastDay && (
+                          <>
+                            <button className="btn-agenda-edit">
+                              Modificar
+                            </button>
+                            <button className="btn-agenda-cancel">
+                              Cancelar
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          );
+        })}
+      </section>
+      <AppointmentModal
+        appointment={selectedAppointment}
+        onClose={() => setSelectedAppointment(null)}
+      />
+    </div>
   );
 }
 

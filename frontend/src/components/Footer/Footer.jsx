@@ -14,9 +14,11 @@ function Footer() {
 
         <div className="footer-links">
           <h4 className="footer-section-title">Navegación</h4>
-          <Link to="/">Inicio</Link>
-          <Link to="/about">Nosotros</Link>
+          <Link to="/" onClick={() => window.scrollTo(0, 0)}>
+            Inicio
+          </Link>
           <Link to="/appointment">Sacar turno</Link>
+          <Link to="/about">Nosotros</Link>
         </div>
 
         <div className="footer-contact">
