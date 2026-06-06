@@ -11,9 +11,9 @@ function AboutPage() {
   const navigate = useNavigate();
   const branches = useBranches();
 
-useEffect(() => {
-  document.title = " Nosotros | Cráneo Barbero";
-}, []);
+  useEffect(() => {
+    document.title = " Nosotros | Cráneo Barbero";
+  }, []);
 
   return (
     <Layout>

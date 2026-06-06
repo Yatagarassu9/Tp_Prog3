@@ -7,13 +7,24 @@ import BarberDashboardPage from "./pages/barber/BarberDashboardPage";
 import BarberSchedulePage from "./pages/barber/BarberSchedulePage";
 import MyAppointmentsPage from "./pages/client/MyAppointmentsPage";
 import ChangePasswordPage from "./pages/client/ChangePasswordPage";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router";
 import { AuthProvider } from "./context/AuthContext";
+import { useEffect } from "react";
+
+function ScrollToTop() {
+  //cada vez que cambiamos de pagina(ruta) nos manda arriba de la pagina
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <ScrollToTop />
         <Routes>
           {/* Rutas públicas */}
           <Route path="/" element={<HomePage />} />
