@@ -1,6 +1,5 @@
 @import "./variables.css";
 
-
 .barber-dashboard {
   max-width: 900px;
   margin: 0 auto;
@@ -163,6 +162,7 @@
   color: var(--text-primary);
   font-size: 0.95rem;
   flex: 1;
+  cursor: pointer;
 }
 
 .agenda-service {

@@ -1,4 +1,3 @@
-import Layout from "../../components/Layout/Layout";
 import AppointmentForm from "../../components/AppointmentForm/AppointmentForm";
 import BarberCard from "../../components/BarberCard/BarberCard";
 import BarberList from "../../components/BarberList/BarberList";
@@ -50,60 +49,58 @@ function AppointmentPage() {
   }); // filtro los barberos segun la sucursal seleccionada antes
 
   useEffect(() => {
-  document.title = " Sacar turno | Cráneo Barbero";
-}, []);
+    document.title = " Sacar turno | Cráneo Barbero";
+  }, []);
 
   return (
-    <Layout>
-      <div className="appointment-page-bg page-transition">
-        <hr className="border-warning opacity-50" />
-        {/* <Button variant="outline-warning" onClick={() => navigate("/")}>
+    <div className="appointment-page-bg page-transition">
+      <hr className="border-warning opacity-50" />
+      {/* <Button variant="outline-warning" onClick={() => navigate("/")}>
         Ir al inicio
       </Button> */}
-        <BranchSelector
-          branches={branches}
-          /* branches.js - (import) - AppointmentPage - (prop) - BranchSelector */
-          onSelectBranch={handleSelectBranch}
+      <BranchSelector
+        branches={branches}
+        /* branches.js - (import) - AppointmentPage - (prop) - BranchSelector */
+        onSelectBranch={handleSelectBranch}
+      />
+      <p />
+      {selectedBranch && (
+        <BarberList
+          barbers={filteredBarbers}
+          onSelectBarber={handleSelectBarber}
         />
-        <p />
-        {selectedBranch && (
-          <BarberList
-            barbers={filteredBarbers}
-            onSelectBarber={handleSelectBarber}
-          />
-        )}
-        {selectedBarber && (
-          <Calendar
-            key={selectedBarber}
-            selectedBranch={selectedBranch}
-            selectedBarber={selectedBarber}
-            onSelectDay={handleSelectDay}
-          />
-        )}
-        {day && (
-          <TimeSlots
-            hours={timeSlots}
-            key={selectedBarber + day} //  el + une los dos valores en un string
-            selectedBranch={selectedBranch}
-            selectedBarber={selectedBarber}
-            selectedDay={day}
-            onSelectHour={handleSelectHour}
-          />
-        )}
+      )}
+      {selectedBarber && (
+        <Calendar
+          key={selectedBarber}
+          selectedBranch={selectedBranch}
+          selectedBarber={selectedBarber}
+          onSelectDay={handleSelectDay}
+        />
+      )}
+      {day && (
+        <TimeSlots
+          hours={timeSlots}
+          key={selectedBarber + day} //  el + une los dos valores en un string
+          selectedBranch={selectedBranch}
+          selectedBarber={selectedBarber}
+          selectedDay={day}
+          onSelectHour={handleSelectHour}
+        />
+      )}
 
-        {day && hour && (
-          <AppointmentForm
-            branch={selectedBranch}
-            barber={selectedBarber}
-            day={day}
-            hours={hour}
-            branches={branches}
-            barbers={barbers}
-            timeSlots={timeSlots}
-          />
-        )}
-      </div>
-    </Layout>
+      {day && hour && (
+        <AppointmentForm
+          branch={selectedBranch}
+          barber={selectedBarber}
+          day={day}
+          hours={hour}
+          branches={branches}
+          barbers={barbers}
+          timeSlots={timeSlots}
+        />
+      )}
+    </div>
   );
 }
 

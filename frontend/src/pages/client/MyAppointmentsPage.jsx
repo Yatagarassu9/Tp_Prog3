@@ -6,7 +6,7 @@ import {
   cancelAppointmentService,
   updateAppointmentService,
 } from "../../components/auth/account.services";
-import Layout from "../../components/Layout/Layout";
+
 import timeSlots from "../../data/timeSlots";
 
 const STATUS_LABELS = {
@@ -37,8 +37,8 @@ function MyAppointmentsPage() {
   const [actionMsg, setActionMsg] = useState({ id: null, text: "", type: "" });
 
   useEffect(() => {
-  document.title = " Mis turnos| Cráneo Barbero";
-}, []);
+    document.title = " Mis turnos| Cráneo Barbero";
+  }, []);
 
   const fetchAppointments = () => {
     setLoading(true);
@@ -140,24 +140,22 @@ function MyAppointmentsPage() {
 
   if (!user) {
     return (
-      <Layout>
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ minHeight: "80vh" }}
-        >
-          <div className="text-center">
-            <p className="text-warning mb-3">
-              Debés iniciar sesión para ver tus turnos.
-            </p>
-            <button
-              className="btn btn-warning text-dark"
-              onClick={() => navigate("/login")}
-            >
-              Ir al login
-            </button>
-          </div>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: "80vh" }}
+      >
+        <div className="text-center">
+          <p className="text-warning mb-3">
+            Debés iniciar sesión para ver tus turnos.
+          </p>
+          <button
+            className="btn btn-warning text-dark"
+            onClick={() => navigate("/login")}
+          >
+            Ir al login
+          </button>
         </div>
-      </Layout>
+      </div>
     );
   }
 
@@ -170,206 +168,203 @@ function MyAppointmentsPage() {
   );
 
   return (
-    <Layout>
-      <div
-        style={{
-          paddingTop: "100px",
-          paddingBottom: "40px",
-          maxWidth: "700px",
-          margin: "0 auto",
-          padding: "100px 20px 40px",
-        }}
+    <div
+      style={{
+        paddingTop: "100px",
+        paddingBottom: "40px",
+        maxWidth: "700px",
+        margin: "0 auto",
+        padding: "100px 20px 40px",
+      }}
+      className="page-transition"
+    >
+      <button
+        className="btn btn-outline-secondary btn-sm mb-4"
+        onClick={() => navigate(-1)}
       >
-        <button
-          className="btn btn-outline-secondary btn-sm mb-4"
-          onClick={() => navigate(-1)}
-        >
-          ← Volver
-        </button>
+        ← Volver
+      </button>
 
-        <h3 className="text-warning mb-4">Mis turnos</h3>
+      <h3 className="text-warning mb-4">Mis turnos</h3>
 
-        {loading && <p className="text-secondary">Cargando turnos...</p>}
-        {error && <p className="text-danger">{error}</p>}
+      {loading && <p className="text-secondary">Cargando turnos...</p>}
+      {error && <p className="text-danger">{error}</p>}
 
-        {!loading && !error && activeAppointments.length === 0 && (
-          <div className="card bg-dark border-secondary p-4 text-center">
-            <p className="text-secondary mb-3">No tenés turnos activos.</p>
-            <button
-              className="btn btn-warning text-dark"
-              onClick={() => navigate("/appointment")}
-            >
-              Sacar un turno
-            </button>
-          </div>
-        )}
+      {!loading && !error && activeAppointments.length === 0 && (
+        <div className="card bg-dark border-secondary p-4 text-center">
+          <p className="text-secondary mb-3">No tenés turnos activos.</p>
+          <button
+            className="btn btn-warning text-dark"
+            onClick={() => navigate("/appointment")}
+          >
+            Sacar un turno
+          </button>
+        </div>
+      )}
 
-        {activeAppointments.map((appointment) => {
-          const date = new Date(appointment.appointmentDate);
-          const isPast = date <= today;
-          const isEditing = editingId === appointment.id;
+      {activeAppointments.map((appointment) => {
+        const date = new Date(appointment.appointmentDate);
+        const isPast = date <= today;
+        const isEditing = editingId === appointment.id;
 
-          return (
-            <div
-              key={appointment.id}
-              className="card bg-dark border-warning mb-3 p-4"
-            >
-              <div className="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                  <span
-                    className="text-warning fw-bold"
-                    style={{ fontSize: "1rem" }}
+        return (
+          <div
+            key={appointment.id}
+            className="card bg-dark border-warning mb-3 p-4"
+          >
+            <div className="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <span
+                  className="text-warning fw-bold"
+                  style={{ fontSize: "1rem" }}
+                >
+                  {date.toLocaleDateString("es-AR", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+                <span
+                  className="text-secondary ms-2"
+                  style={{ fontSize: "0.9rem" }}
+                >
+                  {date.toLocaleTimeString("es-AR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+              </div>
+              <span className={`badge bg-${STATUS_COLORS[appointment.status]}`}>
+                {STATUS_LABELS[appointment.status]}
+              </span>
+            </div>
+
+            {appointment.barber && (
+              <p className="text-light mb-1" style={{ fontSize: "0.9rem" }}>
+                Barbero:{" "}
+                <span className="text-white">{appointment.barber.name}</span>
+              </p>
+            )}
+
+            {actionMsg.id === appointment.id && actionMsg.text && (
+              <div
+                className={`alert alert-${actionMsg.type} py-2 mt-2`}
+                style={{ fontSize: "0.85rem" }}
+              >
+                {actionMsg.text}
+              </div>
+            )}
+
+            {!isPast && !isEditing && (
+              <div className="d-flex gap-2 mt-3">
+                <button
+                  className="btn btn-outline-warning btn-sm"
+                  onClick={() => handleStartEdit(appointment)}
+                  disabled={actionLoading}
+                >
+                  Modificar
+                </button>
+                <button
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => handleCancel(appointment.id)}
+                  disabled={actionLoading}
+                >
+                  Cancelar turno
+                </button>
+              </div>
+            )}
+
+            {isEditing && (
+              <div className="mt-3">
+                <div className="d-flex gap-2 mb-2">
+                  <input
+                    type="date"
+                    value={newDate}
+                    min={new Date().toISOString().slice(0, 10)}
+                    onChange={(e) => setNewDate(e.target.value)}
+                    className="form-control bg-secondary text-white border-secondary"
+                    style={{ flex: 1 }}
+                  />
+                  <select
+                    value={newTime}
+                    onChange={(e) => setNewTime(e.target.value)}
+                    className="form-select bg-secondary text-white border-secondary"
+                    style={{ flex: 1 }}
                   >
-                    {date.toLocaleDateString("es-AR", {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </span>
+                    <option value="">Horario</option>
+                    {timeSlots.map((slot) => (
+                      <option key={slot.id} value={slot.id}>
+                        {slot.time}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="d-flex gap-2">
+                  <button
+                    className="btn btn-warning text-dark btn-sm"
+                    onClick={() => handleSaveEdit(appointment.id)}
+                    disabled={actionLoading}
+                  >
+                    {actionLoading ? "Guardando..." : "Guardar cambio"}
+                  </button>
+                  <button
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={() => {
+                      setEditingId(null);
+                      setActionMsg({ id: null, text: "", type: "" });
+                    }}
+                    disabled={actionLoading}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {pastAppointments.length > 0 && (
+        <>
+          <h5 className="text-secondary mt-4 mb-3">Historial</h5>
+          {pastAppointments.map((appointment) => {
+            const date = new Date(appointment.appointmentDate);
+            return (
+              <div
+                key={appointment.id}
+                className="card bg-dark border-secondary mb-2 p-3"
+                style={{ opacity: 0.7 }}
+              >
+                <div className="d-flex justify-content-between align-items-center">
                   <span
-                    className="text-secondary ms-2"
+                    className="text-secondary"
                     style={{ fontSize: "0.9rem" }}
                   >
+                    {date.toLocaleDateString("es-AR", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}{" "}
+                    —{" "}
                     {date.toLocaleTimeString("es-AR", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
+                    {appointment.barber && ` · ${appointment.barber.name}`}
+                  </span>
+                  <span
+                    className={`badge bg-${STATUS_COLORS[appointment.status]}`}
+                  >
+                    {STATUS_LABELS[appointment.status]}
                   </span>
                 </div>
-                <span
-                  className={`badge bg-${STATUS_COLORS[appointment.status]}`}
-                >
-                  {STATUS_LABELS[appointment.status]}
-                </span>
               </div>
-
-              {appointment.barber && (
-                <p className="text-light mb-1" style={{ fontSize: "0.9rem" }}>
-                  Barbero:{" "}
-                  <span className="text-white">{appointment.barber.name}</span>
-                </p>
-              )}
-
-              {actionMsg.id === appointment.id && actionMsg.text && (
-                <div
-                  className={`alert alert-${actionMsg.type} py-2 mt-2`}
-                  style={{ fontSize: "0.85rem" }}
-                >
-                  {actionMsg.text}
-                </div>
-              )}
-
-              {!isPast && !isEditing && (
-                <div className="d-flex gap-2 mt-3">
-                  <button
-                    className="btn btn-outline-warning btn-sm"
-                    onClick={() => handleStartEdit(appointment)}
-                    disabled={actionLoading}
-                  >
-                    Modificar
-                  </button>
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => handleCancel(appointment.id)}
-                    disabled={actionLoading}
-                  >
-                    Cancelar turno
-                  </button>
-                </div>
-              )}
-
-              {isEditing && (
-                <div className="mt-3">
-                  <div className="d-flex gap-2 mb-2">
-                    <input
-                      type="date"
-                      value={newDate}
-                      min={new Date().toISOString().slice(0, 10)}
-                      onChange={(e) => setNewDate(e.target.value)}
-                      className="form-control bg-secondary text-white border-secondary"
-                      style={{ flex: 1 }}
-                    />
-                    <select
-                      value={newTime}
-                      onChange={(e) => setNewTime(e.target.value)}
-                      className="form-select bg-secondary text-white border-secondary"
-                      style={{ flex: 1 }}
-                    >
-                      <option value="">Horario</option>
-                      {timeSlots.map((slot) => (
-                        <option key={slot.id} value={slot.id}>
-                          {slot.time}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-warning text-dark btn-sm"
-                      onClick={() => handleSaveEdit(appointment.id)}
-                      disabled={actionLoading}
-                    >
-                      {actionLoading ? "Guardando..." : "Guardar cambio"}
-                    </button>
-                    <button
-                      className="btn btn-outline-secondary btn-sm"
-                      onClick={() => {
-                        setEditingId(null);
-                        setActionMsg({ id: null, text: "", type: "" });
-                      }}
-                      disabled={actionLoading}
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-
-        {pastAppointments.length > 0 && (
-          <>
-            <h5 className="text-secondary mt-4 mb-3">Historial</h5>
-            {pastAppointments.map((appointment) => {
-              const date = new Date(appointment.appointmentDate);
-              return (
-                <div
-                  key={appointment.id}
-                  className="card bg-dark border-secondary mb-2 p-3"
-                  style={{ opacity: 0.7 }}
-                >
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span
-                      className="text-secondary"
-                      style={{ fontSize: "0.9rem" }}
-                    >
-                      {date.toLocaleDateString("es-AR", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}{" "}
-                      —{" "}
-                      {date.toLocaleTimeString("es-AR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                      {appointment.barber && ` · ${appointment.barber.name}`}
-                    </span>
-                    <span
-                      className={`badge bg-${STATUS_COLORS[appointment.status]}`}
-                    >
-                      {STATUS_LABELS[appointment.status]}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </>
-        )}
-      </div>
-    </Layout>
+            );
+          })}
+        </>
+      )}
+    </div>
   );
 }
 

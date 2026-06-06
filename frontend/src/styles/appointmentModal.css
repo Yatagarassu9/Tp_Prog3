@@ -1,0 +1,61 @@
+@import "./variables.css";
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 200, 49, 0.3);
+  border-radius: 14px;
+  padding: 32px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 0 32px rgba(255, 200, 49, 0.1);
+}
+
+.modal-title {
+  color: var(--accent-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 0.95rem;
+}
+
+.modal-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.modal-row span:last-child {
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.modal-close {
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 200, 49, 0.4);
+  color: var(--accent-primary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+  align-self: flex-end;
+}

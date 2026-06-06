@@ -2,14 +2,17 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext(null);
 
+// escape + decodeURIComponent alrededor del atob resuelve el problema de encoding con caracteres especiales en JWT
+// el primer error que vimos era nombres con acentos, no salian y aparecía mal
 function decodeToken(token) {
   try {
     const payload = token.split(".")[1];
-    return JSON.parse(atob(payload));
+    return JSON.parse(decodeURIComponent(escape(atob(payload))));
   } catch {
     return null;
   }
 }
+
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

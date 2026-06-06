@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import { changePasswordService } from "../../components/auth/account.services";
-import Layout from "../../components/Layout/Layout";
 
 function ChangePasswordPage() {
   const { user } = useAuth();
@@ -15,21 +14,27 @@ function ChangePasswordPage() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-  document.title = " Cambiar contraseña | Cráneo Barbero";
-}, []);
+    document.title = " Cambiar contraseña | Cráneo Barbero";
+  }, []);
 
   if (!user) {
     return (
-      <Layout>
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
-          <div className="text-center">
-            <p className="text-warning mb-3">Debés iniciar sesión para acceder a esta sección.</p>
-            <button className="btn btn-warning text-dark" onClick={() => navigate("/login")}>
-              Ir al login
-            </button>
-          </div>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: "80vh" }}
+      >
+        <div className="text-center">
+          <p className="text-warning mb-3">
+            Debés iniciar sesión para acceder a esta sección.
+          </p>
+          <button
+            className="btn btn-warning text-dark"
+            onClick={() => navigate("/login")}
+          >
+            Ir al login
+          </button>
         </div>
-      </Layout>
+      </div>
     );
   }
 
@@ -59,75 +64,81 @@ function ChangePasswordPage() {
       (err) => {
         setLoading(false);
         setError(err.message);
-      }
+      },
     );
   };
 
   return (
-    <Layout>
+    <div
+      className="d-flex justify-content-center align-items-center page-transition"
+      style={{ minHeight: "80vh", paddingTop: "80px" }}
+    >
       <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: "80vh", paddingTop: "80px" }}
+        className="card bg-dark border-warning p-4"
+        style={{ width: "100%", maxWidth: "420px" }}
       >
-        <div
-          className="card bg-dark border-warning p-4"
-          style={{ width: "100%", maxWidth: "420px" }}
+        <button
+          className="btn btn-outline-secondary btn-sm mb-3"
+          style={{ width: "fit-content" }}
+          onClick={() => navigate(-1)}
         >
-          <button
-            className="btn btn-outline-secondary btn-sm mb-3"
-            style={{ width: "fit-content" }}
-            onClick={() => navigate(-1)}
-          >
-            ← Volver
-          </button>
+          ← Volver
+        </button>
 
-          <h4 className="text-warning mb-4">Cambiar contraseña</h4>
+        <h4 className="text-warning mb-4">Cambiar contraseña</h4>
 
-          {success && (
-            <div className="alert alert-success">
-              Contraseña actualizada correctamente.
-            </div>
+        {success && (
+          <div className="alert alert-success">
+            Contraseña actualizada correctamente.
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <input
+              type="password"
+              placeholder="Nueva contraseña (mínimo 7 caracteres)"
+              value={newPassword}
+              onChange={(e) => {
+                setNewPassword(e.target.value);
+                setError("");
+                setSuccess(false);
+              }}
+              className="form-control bg-secondary text-white border-secondary"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <input
+              type="password"
+              placeholder="Repetir nueva contraseña"
+              value={confirmPassword}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                setError("");
+                setSuccess(false);
+              }}
+              className="form-control bg-secondary text-white border-secondary"
+              required
+            />
+          </div>
+
+          {error && (
+            <p className="text-danger mb-3" style={{ fontSize: "14px" }}>
+              {error}
+            </p>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <input
-                type="password"
-                placeholder="Nueva contraseña (mínimo 7 caracteres)"
-                value={newPassword}
-                onChange={(e) => { setNewPassword(e.target.value); setError(""); setSuccess(false); }}
-                className="form-control bg-secondary text-white border-secondary"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <input
-                type="password"
-                placeholder="Repetir nueva contraseña"
-                value={confirmPassword}
-                onChange={(e) => { setConfirmPassword(e.target.value); setError(""); setSuccess(false); }}
-                className="form-control bg-secondary text-white border-secondary"
-                required
-              />
-            </div>
-
-            {error && (
-              <p className="text-danger mb-3" style={{ fontSize: "14px" }}>
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="btn btn-warning text-dark w-100"
-              disabled={loading}
-            >
-              {loading ? "Guardando..." : "Guardar contraseña"}
-            </button>
-          </form>
-        </div>
+          <button
+            type="submit"
+            className="btn btn-warning text-dark w-100"
+            disabled={loading}
+          >
+            {loading ? "Guardando..." : "Guardar contraseña"}
+          </button>
+        </form>
       </div>
-    </Layout>
+    </div>
   );
 }
 
