@@ -16,7 +16,7 @@ function BranchCard({ branch, isSelected, onClick }) {
     >
       <Card.Body className="card-body-custom">
         <Card.Title className="text-warning">{branch.name}</Card.Title>
-        <p>Dirección: {branch.address}</p>
+        <p >Dirección: {branch.address}</p>
         <p>Telefono: {branch.phone}</p>
         <Button variant="outline-warning" className="w-100" onClick={onClick}>
           Seleccionar sucursal
