@@ -7,17 +7,18 @@ import TimeSlots from "../../components/TimeSlots/TimeSlots";
 import timeSlots from "../../data/timeSlots";
 import "../../styles/appointment.css";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { Button } from "react-bootstrap";
 import useBranches from "../../hooks/useBranches.js";
 import useBarbers from "../../hooks/useBarbers.js";
 
 function AppointmentPage() {
+  const location = useLocation();
   const [day, setDay] = useState(null);
   const [hour, setHour] = useState(null);
   const branches = useBranches();
   const barbers = useBarbers();
-  const [selectedBranch, setSelectedBranch] = useState(null);
+  const [selectedBranch, setSelectedBranch] = useState(location.state?.branchId ?? null);
   const [selectedBarber, setSelectedBarber] = useState(null);
   const navigate = useNavigate();
 
@@ -60,8 +61,8 @@ function AppointmentPage() {
       </Button> */}
       <BranchSelector
         branches={branches}
-        /* branches.js - (import) - AppointmentPage - (prop) - BranchSelector */
         onSelectBranch={handleSelectBranch}
+        initialSelected={selectedBranch}
       />
       <p />
       {selectedBranch && (

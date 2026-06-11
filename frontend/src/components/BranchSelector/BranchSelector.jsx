@@ -3,8 +3,8 @@ import BranchCard from "../BranchCard/BranchCard";
 import { Row } from "react-bootstrap";
 
 
-function BranchSelector({ branches, onSelectBranch }) {
-  const [selected, setSelected] = useState(null);
+function BranchSelector({ branches, onSelectBranch, initialSelected = null }) {
+  const [selected, setSelected] = useState(initialSelected);
 
   const mapedBranches = branches.map((branch) => {
     return (

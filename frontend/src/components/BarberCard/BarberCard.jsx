@@ -14,7 +14,7 @@ function BarberCard({ isSelected, barber, onClick }) {
           : {}
       }
     >
-      <Card.Img style={{width: "100%", height:"auto", objectPosition: "top"}} variant="top" src={barber.imageUrl} />
+      <Card.Img style={{ width: "100%", height: 150, objectFit: "cover", objectPosition: "top" }} variant="top" src={barber.imageUrl} />
       <Card.Body className="card-body-custom">
         <Card.Title className="text-warning">{barber.name}</Card.Title>
         <p>Años de experiencia: {barber.yearsOfExperience}</p>
