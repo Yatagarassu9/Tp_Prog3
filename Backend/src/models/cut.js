@@ -10,9 +10,6 @@ const cut = sequelize.define("cut", {
     type: DataTypes.FLOAT,
     allowNull: false
   },
-  duration: {
-    type: DataTypes.INTEGER // minutos
-  }
 });
 
 export default cut;

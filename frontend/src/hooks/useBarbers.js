@@ -6,7 +6,7 @@ function useBarbers() {
   const [barbers, setBarbers] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/barbers")
+    fetch(`${import.meta.env.VITE_API_URL}/barbers`)
       .then((res) => res.json())
       .then((data) => setBarbers(data));
   }, []);

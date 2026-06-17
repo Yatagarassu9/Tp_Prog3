@@ -6,7 +6,7 @@ function useBranches() {
   const [branches, setBranches] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/branches")
+    fetch(`${import.meta.env.VITE_API_URL}/branches`)
       .then((res) => res.json())
       .then((data) => setBranches(data));
   }, []);
