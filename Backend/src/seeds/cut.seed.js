@@ -7,15 +7,15 @@ export const seedCuts = async () => {
     await Cut.bulkCreate([
       {
         name: "Corte + Barba",
-        price: "$15000",    
+        price: 15000,    
       },
       {
         name: "Corte",
-        price: "$10000",    
+        price: 10000,    
       },
       {
         name: "Barba",
-        price: "$7500",    
+        price: 7500,    
       },
     ]);
   }

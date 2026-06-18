@@ -6,7 +6,6 @@ import authRoutes from "./routes/auth.routes.js";
 import "./models/relations.js";
 import cors from "cors";
 
-
 // routes
 import userRoutes from "./routes/user.routes.js";
 import appointmentsRoutes from "./routes/appointments.routes.js";
@@ -31,7 +30,7 @@ app.get("/", (req, res) => {
   res.send("api andando como se viene diciendo");
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const start = async () => {
   await sequelize.sync();
