@@ -9,13 +9,14 @@ export const createAppointmentService = (
   clientId,
   barberId,
   appointmentDate,
+  cutId,
   onSuccess,
   onError
 ) => {
   fetch(`${BASE_URL}/appointments`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ clientId, barberId, appointmentDate }),
+    body: JSON.stringify({ clientId, barberId, appointmentDate, cutId }),
   })
     .then(async (res) => {
       if (!res.ok) {
