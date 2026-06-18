@@ -40,4 +40,7 @@ const start = async () => {
   });
 };
 
-start();
+start().catch((err) => {
+  console.error("Error al iniciar el servidor:", err);
+  process.exit(1);
+});
