@@ -18,7 +18,6 @@ const router = Router();
 // obtener todos los cortes
 router.get(
   "/",
-  authMiddleware,
 
   async (req, res) => {
 

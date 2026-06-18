@@ -14,8 +14,8 @@ function TimeSlots({
       <button
         className={
           selected === hour.id
-            ? "btn btn-warning text-white w-100 p-3"
-            : "btn btn-dark text-white w-100 p-3"
+            ? "btn btn-warning text-white w-100 p-2"
+            : "btn btn-dark text-white w-100 p-2"
         }
         key={hour.id}
         onClick={() => {

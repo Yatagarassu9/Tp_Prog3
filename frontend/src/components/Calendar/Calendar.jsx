@@ -101,8 +101,10 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
             <button
               className={
                 selected
-                  ? "btn btn-warning text-white w-100 p-3"
-                  : "btn btn-dark text-white w-100 p-3"
+                  ? "btn btn-warning text-dark fw-bold w-100 p-2"
+                  : disabled
+                  ? "btn btn-dark text-secondary w-100 p-2"
+                  : "btn btn-outline-warning text-warning w-100 p-2"
               }
               key={day}
               disabled={disabled}

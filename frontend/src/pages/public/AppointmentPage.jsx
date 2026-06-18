@@ -4,20 +4,25 @@ import BarberList from "../../components/BarberList/BarberList";
 import BranchSelector from "../../components/BranchSelector/BranchSelector";
 import Calendar from "../../components/Calendar/Calendar";
 import TimeSlots from "../../components/TimeSlots/TimeSlots";
+import CutSelector from "../../components/CutSelector/CutSelector";
 import timeSlots from "../../data/timeSlots";
 import "../../styles/appointment.css";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { Button } from "react-bootstrap";
 import useBranches from "../../hooks/useBranches.js";
 import useBarbers from "../../hooks/useBarbers.js";
+import useCuts from "../../hooks/useCuts.js";
 
 function AppointmentPage() {
+  const location = useLocation();
   const [day, setDay] = useState(null);
   const [hour, setHour] = useState(null);
+  const [selectedCut, setSelectedCut] = useState(null);
   const branches = useBranches();
   const barbers = useBarbers();
-  const [selectedBranch, setSelectedBranch] = useState(null);
+  const cuts = useCuts();
+  const [selectedBranch, setSelectedBranch] = useState(location.state?.branchId ?? null);
   const [selectedBarber, setSelectedBarber] = useState(null);
   const navigate = useNavigate();
 
@@ -32,10 +37,17 @@ function AppointmentPage() {
     setSelectedBarber(barberId);
     setDay(null);
     setHour(null);
+    setSelectedCut(null);
   };
 
   const handleSelectDay = (day) => {
     setDay(day);
+    setSelectedCut(null);
+    setHour(null);
+  };
+
+  const handleSelectCut = (cutId) => {
+    setSelectedCut(cutId);
     setHour(null);
   };
 
@@ -60,8 +72,8 @@ function AppointmentPage() {
       </Button> */}
       <BranchSelector
         branches={branches}
-        /* branches.js - (import) - AppointmentPage - (prop) - BranchSelector */
         onSelectBranch={handleSelectBranch}
+        initialSelected={selectedBranch}
       />
       <p />
       {selectedBranch && (
@@ -79,9 +91,13 @@ function AppointmentPage() {
         />
       )}
       {day && (
+        <CutSelector cuts={cuts} onSelectCut={handleSelectCut} />
+      )}
+
+      {day && selectedCut && (
         <TimeSlots
           hours={timeSlots}
-          key={selectedBarber + day} //  el + une los dos valores en un string
+          key={selectedBarber + day}
           selectedBranch={selectedBranch}
           selectedBarber={selectedBarber}
           selectedDay={day}
@@ -89,14 +105,16 @@ function AppointmentPage() {
         />
       )}
 
-      {day && hour && (
+      {day && selectedCut && hour && (
         <AppointmentForm
           branch={selectedBranch}
           barber={selectedBarber}
           day={day}
           hours={hour}
+          cut={selectedCut}
           branches={branches}
           barbers={barbers}
+          cuts={cuts}
           timeSlots={timeSlots}
         />
       )}
