@@ -21,7 +21,7 @@
 }
 
 .card-body-custom {
-  color: var(--text-secondary);
+  color: grey !important;
 }
 
 /* letter-spacing - espacio entre letras */

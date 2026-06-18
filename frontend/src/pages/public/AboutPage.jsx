@@ -38,7 +38,7 @@ function AboutPage() {
                 <p>Teléfono: {branch.phone}</p>
                 <button
                   className="btn-outline-custom"
-                  onClick={() => navigate("/appointment")}
+                  onClick={() => navigate("/appointment", { state: { branchId: branch.id } })}
                 >
                   Sacar turno →
                 </button>
