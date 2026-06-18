@@ -10,8 +10,10 @@ function AppointmentForm({
   barber,
   day,
   hours,
+  cut,
   branches,
   barbers,
+  cuts,
   timeSlots,
 }) {
   const { user, login } = useAuth();
@@ -24,6 +26,7 @@ function AppointmentForm({
   const selectedBranch = branches.find((b) => b.id === branch);
   const selectedBarber = barbers.find((barb) => barb.id === barber);
   const selectedHour = timeSlots.find((hour) => hour.id === hours);
+  const selectedCut = cuts.find((c) => c.id === cut);
 
   const handleConfirm = () => {
     if (!user) { openModal(); return; }
@@ -38,6 +41,7 @@ function AppointmentForm({
       user.id,
       barber,
       date.toISOString(),
+      cut,
       () => { setConfirmLoading(false); setConfirmed(true); },
       (err) => { setConfirmLoading(false); setConfirmError(err.message); }
     );
@@ -74,6 +78,7 @@ function AppointmentForm({
       decoded.id,
       barber,
       date.toISOString(),
+      cut,
       () => { setConfirmLoading(false); setConfirmed(true); },
       (err) => { setConfirmLoading(false); setConfirmError(err.message); }
     );
@@ -94,6 +99,9 @@ function AppointmentForm({
           Fecha: {day.toLocaleDateString("es-AR")}
         </div>
         <div className="text-light mb-1">Horario: {selectedHour.time}</div>
+        <div className="text-light mb-1">
+          Servicio: {selectedCut.name} — {selectedCut.price}
+        </div>
 
         {confirmError && (
           <div className="alert alert-danger py-2 mt-3" style={{ fontSize: "0.85rem" }}>
