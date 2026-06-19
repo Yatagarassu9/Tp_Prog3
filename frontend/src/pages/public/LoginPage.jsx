@@ -21,8 +21,10 @@ function LoginPage() {
   }; // Decodifica el token JWT para leer el payload (los datos del usuario) en ese momento, porque el AuthContext acaba de actualizar su estado
   // pero React todavía no lo refleja. Cuando trae los datos y el rol, navega a la ruta correspondiente
 
-  const handleRegisterSuccess = () => {
-    setView("login");
+  const handleRegisterSuccess = (token) => {
+    login(token);
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    navigate(decoded.role === "barber" ? "/barber" : "/");
   };
 
   return (

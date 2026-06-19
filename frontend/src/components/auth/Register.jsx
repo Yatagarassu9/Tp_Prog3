@@ -49,9 +49,9 @@ const Register = ({ onRegister, onCancel }) => {
             name,
             email,
             password,
-            () => {
+            (data) => {
                 setLoading(false);
-                onRegister();
+                onRegister(data.token);
             },
             (err) => {
                 setServerError(err.message);

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import jwt from "jsonwebtoken";
 import { loginUser } from "../services/auth.service.js";
 import { createUser } from "../services/user.service.js";
 import { ROLES } from "../enums/enums.js";
@@ -30,7 +31,13 @@ router.post("/register", async (req, res) => {
 
     const user = await createUser({ name, email, password, role: ROLES.CLIENT });
 
-    res.status(201).json({ message: "Usuario creado correctamente", userId: user.id });
+    const token = jwt.sign(
+      { id: user.id, role: user.role, name: user.name },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.status(201).json({ token });
 
   } catch (error) {
     res.status(400).json({

@@ -7,6 +7,7 @@ import {
   updateAppointment,
   deleteAppointment,
   getAppointmentsByClientId,
+  getBookedSlots,
 } from "../services/appointment.service.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -52,6 +53,20 @@ router.get(
     }
   },
 );
+
+// obtener horarios ocupados por barbero y fecha (público, sin auth)
+router.get("/availability", async (req, res) => {
+  try {
+    const { barberId, date } = req.query;
+    if (!barberId || !date) {
+      return res.status(400).json({ error: "barberId y date son requeridos" });
+    }
+    const slots = await getBookedSlots(barberId, date);
+    res.json(slots);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // obtener turno por id
 router.get(

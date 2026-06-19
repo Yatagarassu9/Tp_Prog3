@@ -1,4 +1,6 @@
+import { Op } from "sequelize";
 import { Appointment, User, Cut } from "../models/relations.js";
+import { sendAppointmentConfirmation } from "./email.service.js";
 
 // obtener todos los turnos
 export const getAppointments = async (barberId = null) => {
@@ -67,7 +69,19 @@ export const createAppointment = async (data) => {
     throw new Error("This appointment is already booked");
   }
 
-  return await Appointment.create(data);
+  const cut = await Cut.findByPk(data.cutId);
+
+  const appointment = await Appointment.create(data);
+
+  sendAppointmentConfirmation({
+    clientEmail: client.email,
+    clientName: client.name,
+    barberName: barber.name,
+    cutName: cut?.name ?? "Servicio",
+    appointmentDate: data.appointmentDate,
+  }).catch((err) => console.error("Error enviando email:", err.message));
+
+  return appointment;
 };
 
 // actualizar turno
@@ -90,6 +104,30 @@ export const deleteAppointment = async (id) => {
   }
 
   return await appointment.destroy();
+};
+
+// obtener horarios ocupados para un barbero en una fecha (público)
+export const getBookedSlots = async (barberId, date) => {
+  // Parsear "YYYY-MM-DD" como fecha local para evitar el desfase UTC
+  const [year, month, day] = date.split("-").map(Number);
+  const start = new Date(year, month - 1, day, 0, 0, 0, 0);
+  const end = new Date(year, month - 1, day, 23, 59, 59, 999);
+
+  const appointments = await Appointment.findAll({
+    where: {
+      barberId,
+      appointmentDate: { [Op.between]: [start, end] },
+      status: { [Op.ne]: "cancelled" },
+    },
+    attributes: ["appointmentDate"],
+  });
+
+  return appointments.map((a) => {
+    const d = new Date(a.appointmentDate);
+    const h = String(d.getHours()).padStart(2, "0");
+    const m = String(d.getMinutes()).padStart(2, "0");
+    return `${h}:${m}`;
+  });
 };
 
 // obtener turnos por cliente
