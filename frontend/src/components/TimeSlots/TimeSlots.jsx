@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getBookedSlotsService } from "../AppointmentForm/appointment.services";
 
 function TimeSlots({
   hours,
@@ -8,22 +9,47 @@ function TimeSlots({
   onSelectHour,
 }) {
   const [selected, setSelected] = useState(null);
+  const [bookedTimes, setBookedTimes] = useState([]);
+
+  useEffect(() => {
+    if (!selectedBarber || !selectedDay) return;
+    getBookedSlotsService(selectedBarber, selectedDay)
+      .then((slots) => setBookedTimes(slots))
+      .catch(() => setBookedTimes([]));
+  }, [selectedBarber, selectedDay]);
 
   const mapedHours = hours.map((hour) => {
+    const isBooked = bookedTimes.includes(hour.time);
+    const isSelected = selected === hour.id;
+
+    let className = "btn w-100 p-2 ";
+    if (isBooked) {
+      className += "btn-secondary text-white opacity-75";
+    } else if (isSelected) {
+      className += "btn-warning text-white";
+    } else {
+      className += "btn-dark text-white";
+    }
+
     return (
       <button
-        className={
-          selected === hour.id
-            ? "btn btn-warning text-white w-100 p-2"
-            : "btn btn-dark text-white w-100 p-2"
-        }
+        className={className}
         key={hour.id}
+        disabled={isBooked}
         onClick={() => {
           setSelected(hour.id);
           onSelectHour(hour.id);
         }}
+        title={isBooked ? "Turno ocupado" : ""}
       >
         {hour.time}
+        {isBooked && (
+          <span
+            style={{ display: "block", fontSize: "0.65rem", lineHeight: 1 }}
+          >
+            Ocupado
+          </span>
+        )}
       </button>
     );
   });

@@ -96,6 +96,7 @@ function BarberDashboardPage() {
     new Date(dateStr).toLocaleTimeString("es-AR", {
       hour: "2-digit",
       minute: "2-digit",
+      hour12: false,
     });
 
   const isPast = (date) => new Date(date) < now;
