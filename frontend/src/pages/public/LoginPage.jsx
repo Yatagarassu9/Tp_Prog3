@@ -10,21 +10,26 @@ function LoginPage() {
   const navigate = useNavigate();
   const [view, setView] = useState("login");
 
+  const roleRedirect = (role) => {
+    if (role === "barber") return "/barber";
+    if (role === "admin") return "/admin";
+    return "/";
+  };
+
   useEffect(() => {
-    if (user) navigate(user.role === "barber" ? "/barber" : "/");
+    if (user) navigate(roleRedirect(user.role));
   }, [user, navigate]);
 
   const handleLoginSuccess = (token) => {
-    login(token); // guarda en contexto y localStorage
-    const decoded = JSON.parse(atob(token.split(".")[1])); // lee el rol del token directamente
-    navigate(decoded.role === "barber" ? "/barber" : "/"); // navega según el rol
-  }; // Decodifica el token JWT para leer el payload (los datos del usuario) en ese momento, porque el AuthContext acaba de actualizar su estado
-  // pero React todavía no lo refleja. Cuando trae los datos y el rol, navega a la ruta correspondiente
+    login(token);
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    navigate(roleRedirect(decoded.role));
+  };
 
   const handleRegisterSuccess = (token) => {
     login(token);
     const decoded = JSON.parse(atob(token.split(".")[1]));
-    navigate(decoded.role === "barber" ? "/barber" : "/");
+    navigate(roleRedirect(decoded.role));
   };
 
   return (

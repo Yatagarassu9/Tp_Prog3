@@ -8,6 +8,8 @@ import BarberSchedulePage from "./pages/barber/BarberSchedulePage";
 import MyAppointmentsPage from "./pages/client/MyAppointmentsPage";
 import ChangePasswordPage from "./pages/client/ChangePasswordPage";
 import NotFoundPage from "./pages/public/NotFoundPage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminManagePage from "./pages/admin/AdminManagePage";
 import Layout from "./components/Layout/Layout";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router";
 import { AuthProvider } from "./context/AuthContext";
@@ -41,6 +43,11 @@ function App() {
             <Route path="/my-account">
               <Route path="appointments" element={<MyAppointmentsPage />} />
               <Route path="change-password" element={<ChangePasswordPage />} />
+            </Route>
+
+            <Route path="/admin">
+              <Route index element={<AdminDashboardPage />} />
+              <Route path="manage" element={<AdminManagePage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />
