@@ -11,12 +11,13 @@ import {
 } from "../services/appointment.service.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-
 import { roleMiddleware } from "../middlewares/role.middleware.js";
 
 const router = Router();
 
-// obtener todos los turnos
+// GET / → trae todos los turnos
+// si el usuario es barbero solo ve los suyos, si es admin ve todos
+// requiere estar logueado y tener rol admin o barbero
 router.get(
   "/",
   authMiddleware,
@@ -36,7 +37,8 @@ router.get(
   },
 );
 
-// obtener turnos del usuario autenticado
+// GET /my → trae los turnos del usuario que esta logueado
+// cualquier usuario autenticado puede usar esta ruta
 router.get(
   "/my",
   authMiddleware,
@@ -54,7 +56,8 @@ router.get(
   },
 );
 
-// obtener horarios ocupados por barbero y fecha (público, sin auth)
+// GET /availability → devuelve los horarios ocupados de un barbero en una fecha
+// es publica, no necesita login, la usa el calendario al sacar turno
 router.get("/availability", async (req, res) => {
   try {
     const { barberId, date } = req.query;
@@ -68,7 +71,8 @@ router.get("/availability", async (req, res) => {
   }
 });
 
-// obtener turno por id
+// GET /:id → busca un turno por su id
+// requiere estar logueado
 router.get(
   "/:id",
   authMiddleware,
@@ -86,7 +90,9 @@ router.get(
   },
 );
 
-// crear turno
+// POST / → crea un nuevo turno
+// solo los clientes pueden sacar turnos
+// validamos los tipos de datos antes de llegar al servicio
 router.post(
   "/",
   authMiddleware,
@@ -96,9 +102,11 @@ router.post(
     try {
       const { appointmentDate, barberId, clientId, cutId } = req.body;
 
+      // validamos que la fecha sea una fecha real y no cualquier string
       if (!appointmentDate || isNaN(new Date(appointmentDate).getTime())) {
         return res.status(400).json({ error: "appointmentDate must be a valid date" });
       }
+      // los ids tienen que ser numeros enteros positivos
       if (!Number.isInteger(Number(barberId)) || Number(barberId) <= 0) {
         return res.status(400).json({ error: "barberId must be a positive integer" });
       }
@@ -120,7 +128,8 @@ router.post(
   },
 );
 
-// actualizar turno
+// PUT /:id → modifica un turno existente (fecha, estado, etc)
+// requiere estar logueado, cualquier rol puede modificar
 router.put(
   "/:id",
   authMiddleware,
@@ -138,7 +147,8 @@ router.put(
   },
 );
 
-// eliminar turno
+// DELETE /:id → elimina un turno definitivamente
+// solo el admin puede borrar turnos
 router.delete(
   "/:id",
   authMiddleware,

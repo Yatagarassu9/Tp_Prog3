@@ -1,3 +1,6 @@
+// lista de horarios disponibles para sacar turno
+// la barberia atiende de 8 a 12 y de 15 a 20, con slots cada 30 minutos
+// los ids los usamos para identificar cada slot en el selector de horarios
 const timeSlots = [
   { id: 1,  time: "08:00" },
   { id: 2,  time: "08:30" },
@@ -8,6 +11,7 @@ const timeSlots = [
   { id: 7,  time: "11:00" },
   { id: 8,  time: "11:30" },
   { id: 9,  time: "12:00" },
+  // aca hay un corte al medio dia, la barberia cierra de 12 a 15
   { id: 10, time: "15:00" },
   { id: 11, time: "15:30" },
   { id: 12, time: "16:00" },

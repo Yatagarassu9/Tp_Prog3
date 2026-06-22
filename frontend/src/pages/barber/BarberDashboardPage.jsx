@@ -8,17 +8,20 @@ import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import "../../styles/barberDashboard.css";
 import "../../styles/appointmentModal.css";
 
+// pagina principal del barbero, muestra su agenda y estadisticas del dia
 function BarberDashboardPage() {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const [editingAppointment, setEditingAppointment] = useState(null);
-  const [cancelingId, setCancelingId] = useState(null);
+  const [selectedAppointment, setSelectedAppointment] = useState(null); // para el modal de detalle
+  const [editingAppointment, setEditingAppointment] = useState(null);   // para el modal de editar
+  const [cancelingId, setCancelingId] = useState(null);                  // id del turno a cancelar
 
+  // cuando confirma la cancelacion en el modal hacemos el request y actualizamos el estado local
   const handleConfirmCancel = () => {
     cancelAppointmentService(
       cancelingId,
       () => {
+        // actualizamos solo el turno cancelado sin recargar toda la lista
         setAppointments((prev) =>
           prev.map((a) =>
             a.id === cancelingId ? { ...a, status: "cancelled" } : a,
@@ -34,7 +37,7 @@ function BarberDashboardPage() {
     document.title = " Inicio | Cráneo Barbero";
   }, []);
 
-  // cargamos el array con los appointments
+  // cargamos los turnos del barbero al montar el componente
   useEffect(() => {
     getBarberAppointmentsService(
       (data) => setAppointments(data),
@@ -43,61 +46,65 @@ function BarberDashboardPage() {
   }, []);
 
   const now = new Date();
-  const today = now.toDateString(); // convierte la fecha en String sin hora, asi puedo comparar solo el día sin la hora
+  const today = now.toDateString(); // convertimos a string sin hora para comparar solo el dia
 
+  // filtramos los turnos que son de hoy
   const todayAppointments = appointments.filter(
-    // filtro solamente los de ese dia
     (appointment) =>
       new Date(appointment.appointmentDate).toDateString() === today,
   );
 
-  // comparo con el status de los turnos
+  // cuantos turnos de hoy ya estan completados
   const attended = todayAppointments.filter(
     (appointment) => appointment.status === "completed",
   );
+
+  // cuantos turnos de hoy estan pendientes de atender
   const pending = todayAppointments.filter(
     (appointment) => appointment.status === "pending",
   );
 
+  // lista de turnos futuros ordenados del mas proximo al mas lejano
+  // sirve para mostrar el "proximo turno" en el banner principal
   const upcoming = appointments
     .filter(
       (appointment) =>
         new Date(appointment.appointmentDate) > now &&
         appointment.status === "pending",
-    ) // filtro del más próximo al más lejano
+    )
     .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
 
-  const nextAppointment = upcoming[0] || null; // si upcoming está vacío o es undefined, el badge del próximo turno no aparece porque no tiene ninguno
+  // el proximo turno es el primero de la lista de futuros, o null si no hay
+  const nextAppointment = upcoming[0] || null;
 
+  // cuantos minutos faltan para el proximo turno
   const minutesUntilNext = nextAppointment
     ? Math.round((new Date(nextAppointment.appointmentDate) - now) / 60000)
     : null;
 
+  // construimos la lista de dias con turnos para la seccion de agenda
+  // Set elimina fechas duplicadas para no mostrar el mismo dia dos veces
   const futureDays = [
-    // Set elimina fechas duplicadas (si hay 2 turnos el mismo día, aparece una sola vez)
     ...new Set(
       appointments
-        // solo los turnos desde hoy en adelante
         .filter(
           (appointment) =>
             new Date(appointment.appointmentDate) >= new Date(today),
         )
-        // convertimos cada fecha a string de solo día, sin hora
         .map((appointment) =>
           new Date(appointment.appointmentDate).toDateString(),
         ),
     ),
   ]
-    // ordenamos los días de más cercano a más lejano
     .sort((a, b) => new Date(a) - new Date(b))
-    // volvemos a convertir a objeto Date para poder usarlo después
     .map((dateStr) => new Date(dateStr));
 
-  // si hoy no tiene turnos, lo agregamos igual al principio
+  // si hoy no tiene turnos lo agregamos igual para mostrar el dia vacio
   if (!futureDays.some((d) => d.toDateString() === today)) {
     futureDays.unshift(new Date(now));
   }
 
+  // devuelve los turnos no cancelados de un dia especifico, ordenados por hora
   const appointmentsForDay = (day) =>
     appointments
       .filter(
@@ -109,6 +116,7 @@ function BarberDashboardPage() {
         (a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate),
       );
 
+  // formatea una fecha a solo hora HH:MM en formato 24h
   const formatTime = (dateStr) =>
     new Date(dateStr).toLocaleTimeString("es-AR", {
       hour: "2-digit",
@@ -116,8 +124,10 @@ function BarberDashboardPage() {
       hour12: false,
     });
 
+  // devuelve true si la fecha ya paso respecto a ahora
   const isPast = (date) => new Date(date) < now;
 
+  // formatea un dia para el titulo de la agenda (ej: "lunes 12 de junio")
   const formatDayTitle = (date) =>
     date.toLocaleDateString("es-AR", {
       weekday: "long",
@@ -127,7 +137,7 @@ function BarberDashboardPage() {
 
   return (
     <div className="barber-dashboard page-transition">
-      {/* Stats */}
+      {/* tarjetas con los numeros del dia: total, pendientes y ya atendidos */}
       <section className="barber-stats">
         <div className="stat-card">
           <span className="stat-value">{todayAppointments.length}</span>
@@ -143,7 +153,7 @@ function BarberDashboardPage() {
         </div>
       </section>
 
-      {/* Próximo turno */}
+      {/* banner con el proximo turno, muestra hora, cliente y tiempo restante */}
       <section className="barber-next">
         <h2 className="section-title">Próximo turno</h2>
         {nextAppointment ? (
@@ -155,7 +165,7 @@ function BarberDashboardPage() {
               <span className="next-client">
                 {nextAppointment.client?.name}
               </span>
-              <span className="next-service">{nextAppointment.Cut?.name}</span>
+              <span className="next-service">{nextAppointment.cut?.name}</span>
             </div>
             <div className="next-badge">En {minutesUntilNext} min</div>
           </div>
@@ -164,7 +174,7 @@ function BarberDashboardPage() {
         )}
       </section>
 
-      {/* Agenda de la semana */}
+      {/* agenda con todos los dias que tienen turnos, uno por fila */}
       <section className="barber-agenda">
         <h2 className="section-title">Agenda de la semana</h2>
         {futureDays.map((day) => {
@@ -181,7 +191,9 @@ function BarberDashboardPage() {
                 </p>
               ) : (
                 dayAppointments.map((appointment) => {
+                  // marcamos el proximo turno con una clase especial para resaltarlo
                   const isNext = nextAppointment?.id === appointment.id;
+                  // si el turno es de hoy y ya paso la hora lo marcamos como pasado
                   const isPassedAppointment =
                     day.toDateString() === now.toDateString() &&
                     isPast(appointment.appointmentDate);
@@ -193,6 +205,7 @@ function BarberDashboardPage() {
                       <span className="agenda-time">
                         {formatTime(appointment.appointmentDate)}
                       </span>
+                      {/* click en el nombre del cliente abre el modal de detalle */}
                       <span
                         className="agenda-client"
                         onClick={() => setSelectedAppointment(appointment)}
@@ -203,6 +216,8 @@ function BarberDashboardPage() {
                       <span className="agenda-service">
                         {appointment.cut?.name}
                       </span>
+
+                      {/* los botones de modificar y cancelar solo aparecen si el turno no paso */}
                       <div className="agenda-actions">
                         {!isPassedAppointment && (
                           <>
@@ -229,16 +244,20 @@ function BarberDashboardPage() {
           );
         })}
       </section>
+
+      {/* modal que muestra el detalle de un turno al hacer click en el cliente */}
       <AppointmentModal
         appointment={selectedAppointment}
         onClose={() => setSelectedAppointment(null)}
       />
 
+      {/* modal para cambiar la fecha y hora de un turno */}
       {editingAppointment && (
         <AppointmentEditModal
           appointment={editingAppointment}
           onClose={() => setEditingAppointment(null)}
           onSaved={(updatedId, newDate) => {
+            // actualizamos solo la fecha del turno editado en el estado local
             setAppointments((prev) =>
               prev.map((a) =>
                 a.id === updatedId ? { ...a, appointmentDate: newDate } : a,
@@ -249,6 +268,7 @@ function BarberDashboardPage() {
         />
       )}
 
+      {/* modal de confirmacion antes de cancelar un turno */}
       {cancelingId && (
         <ConfirmModal
           title="Cancelar turno"

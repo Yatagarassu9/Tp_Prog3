@@ -6,7 +6,7 @@ import { cancelAppointmentService } from "../../services/appointments.services";
 import AppointmentEditModal from "../../components/AppointmentEditModal/AppointmentEditModal";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 
-// etiquetas y colores para cada estado del turno
+// etiquetas y colores para mostrar el estado del turno de forma legible
 const STATUS_LABELS = {
   pending: "Pendiente",
   confirmed: "Confirmado",
@@ -14,6 +14,7 @@ const STATUS_LABELS = {
   completed: "Completado",
 };
 
+// los colores son clases de bootstrap, cada estado tiene el suyo
 const STATUS_COLORS = {
   pending: "warning",
   confirmed: "success",
@@ -21,29 +22,30 @@ const STATUS_COLORS = {
   completed: "info",
 };
 
+// pagina donde el cliente logueado ve y gestiona sus propios turnos
 function MyAppointmentsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // todos los turnos del cliente
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // turno que se está por cancelar, para mostrar el modal de confirmación
+  // id del turno que se esta por cancelar, necesario para pasar al modal de confirmacion
   const [cancelingId, setCancelingId] = useState(null);
 
-  // turno que se está editando, para mostrar el modal de edición
+  // turno seleccionado para editar, se lo pasamos al AppointmentEditModal
   const [editingAppointment, setEditingAppointment] = useState(null);
 
-  // mensaje de feedback después de una acción (cancelar o modificar)
+  // mensaje de feedback que aparece debajo del turno afectado (no es un toast global)
   const [actionMsg, setActionMsg] = useState({ id: null, text: "", type: "" });
 
   useEffect(() => {
     document.title = " Mis turnos | Cráneo Barbero";
   }, []);
 
-  // función para traer los turnos del servidor, la reutilizamos después de cada acción
+  // funcion reutilizable para traer los turnos del servidor
+  // la llamamos al montar y tambien despues de cada accion
   const fetchAppointments = () => {
     setLoading(true);
     setError("");
@@ -59,16 +61,17 @@ function MyAppointmentsPage() {
     );
   };
 
+  // solo cargamos turnos si hay un usuario logueado
   useEffect(() => {
     if (user) fetchAppointments();
   }, [user]);
 
-  // cuando el usuario confirma la cancelación en el modal
+  // cuando confirma la cancelacion en el modal hacemos el request
   const handleConfirmCancel = () => {
     cancelAppointmentService(
       cancelingId,
       () => {
-        // marcamos el turno como cancelado en el array local sin recargar
+        // actualizamos el estado en el array local para no recargar toda la pagina
         setAppointments((prev) =>
           prev.map((a) =>
             a.id === cancelingId ? { ...a, status: "cancelled" } : a,
@@ -84,6 +87,7 @@ function MyAppointmentsPage() {
     );
   };
 
+  // si no esta logueado mostramos un mensaje y boton para ir al login
   if (!user) {
     return (
       <div
@@ -107,7 +111,8 @@ function MyAppointmentsPage() {
 
   const today = new Date();
 
-  // separamos los turnos activos de los ya terminados o cancelados
+  // separamos los turnos activos (pendientes) de los que ya terminaron o fueron cancelados
+  // los activos muestran botones de accion, los del historial son de solo lectura
   const activeAppointments = appointments.filter(
     (a) => a.status !== "cancelled" && a.status !== "completed",
   );
@@ -150,9 +155,10 @@ function MyAppointmentsPage() {
         </div>
       )}
 
+      {/* listado de turnos activos, cada uno con sus botones de modificar y cancelar */}
       {activeAppointments.map((appointment) => {
         const date = new Date(appointment.appointmentDate);
-        const isPast = date <= today;
+        const isPast = date <= today; // si ya paso la hora no mostramos los botones
 
         return (
           <div
@@ -188,7 +194,7 @@ function MyAppointmentsPage() {
               </p>
             )}
 
-            {/* mensaje de feedback después de cancelar o modificar */}
+            {/* mensaje de exito o error que aparece despues de cancelar o modificar */}
             {actionMsg.id === appointment.id && actionMsg.text && (
               <div
                 className={`alert alert-${actionMsg.type} py-2 mt-2`}
@@ -198,7 +204,7 @@ function MyAppointmentsPage() {
               </div>
             )}
 
-            {/* solo mostramos los botones si el turno todavía no pasó */}
+            {/* solo mostramos los botones si el turno aun no paso */}
             {!isPast && (
               <div className="d-flex gap-2 mt-3">
                 <button
@@ -219,7 +225,7 @@ function MyAppointmentsPage() {
         );
       })}
 
-      {/* historial de turnos completados y cancelados */}
+      {/* historial de turnos completados y cancelados (incluyendo los que cancelo el barbero) */}
       {pastAppointments.length > 0 && (
         <>
           <h5 className="text-secondary mt-4 mb-3">Historial</h5>
@@ -255,7 +261,7 @@ function MyAppointmentsPage() {
         </>
       )}
 
-      {/* modal para modificar la fecha y horario del turno */}
+      {/* modal para cambiar la fecha y hora del turno */}
       {editingAppointment && (
         <AppointmentEditModal
           appointment={editingAppointment}
@@ -273,7 +279,7 @@ function MyAppointmentsPage() {
         />
       )}
 
-      {/* modal de confirmación antes de cancelar */}
+      {/* modal de confirmacion antes de cancelar */}
       {cancelingId && (
         <ConfirmModal
           title="Cancelar turno"
