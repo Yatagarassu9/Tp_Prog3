@@ -105,3 +105,42 @@
   outline: none;
   border-color: rgba(255, 200, 49, 0.4);
 }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 540px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-card {
+    min-width: unset;
+    width: 100%;
+    border-radius: 18px 18px 0 0;
+    padding: 24px 18px 36px;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+
+  .modal-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .modal-row span:last-child {
+    text-align: left;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .modal-actions button,
+  .modal-close {
+    width: 100%;
+    text-align: center;
+    align-self: stretch;
+    justify-content: center;
+  }
+}

@@ -48,14 +48,34 @@ function AdminDashboardPage() {
 
   // ===== CÁLCULO DE STATS =====
 
+  const [revenueMonth, setRevenueMonth] = useState("");
+
   // contamos los turnos por estado
   const pending = appointments.filter((a) => a.status === "pending").length;
   const completed = appointments.filter((a) => a.status === "completed").length;
   const cancelled = appointments.filter((a) => a.status === "cancelled").length;
 
+  // meses disponibles para filtrar (extraídos de los turnos completados)
+  const availableMonths = [
+    ...new Set(
+      appointments
+        .filter((a) => a.status === "completed")
+        .map((a) => {
+          const d = new Date(a.appointmentDate);
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        })
+    ),
+  ].sort().reverse();
+
   // sumamos el precio del corte de cada turno completado para saber lo facturado
   const totalRevenue = appointments
-    .filter((a) => a.status === "completed" && a.cut?.price)
+    .filter((a) => {
+      if (a.status !== "completed" || !a.cut?.price) return false;
+      if (!revenueMonth) return true;
+      const d = new Date(a.appointmentDate);
+      const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      return m === revenueMonth;
+    })
     .reduce((sum, a) => sum + Number(a.cut.price), 0);
 
   // contamos solo los usuarios con rol client
@@ -143,6 +163,17 @@ function AdminDashboardPage() {
                 ${totalRevenue.toLocaleString("es-AR")}
               </span>
               <span className="admin-stat-label">Total facturado</span>
+              <select
+                value={revenueMonth}
+                onChange={(e) => setRevenueMonth(e.target.value)}
+                className="form-select form-select-sm bg-secondary text-white border-secondary mt-2"
+                style={{ fontSize: "12px", maxWidth: "160px", margin: "8px auto 0" }}
+              >
+                <option value="">Todos los meses</option>
+                {availableMonths.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
             </div>
             <div className="admin-stat-card admin-stat-card-wide">
               <span className="admin-stat-value admin-stat-value-text">

@@ -1,6 +1,5 @@
 import { Op } from "sequelize";
 import { Appointment, User, Cut } from "../models/relations.js";
-import { sendAppointmentConfirmation } from "./email.service.js";
 
 // obtener todos los turnos
 export const getAppointments = async (barberId = null) => {
@@ -71,15 +70,9 @@ export const createAppointment = async (data) => {
 
   const cut = await Cut.findByPk(data.cutId);
 
-  const appointment = await Appointment.create(data);
+  if (!cut) throw new Error("Invalid cut");
 
-  sendAppointmentConfirmation({
-    clientEmail: client.email,
-    clientName: client.name,
-    barberName: barber.name,
-    cutName: cut?.name ?? "Servicio",
-    appointmentDate: data.appointmentDate,
-  }).catch((err) => console.error("Error enviando email:", err.message));
+  const appointment = await Appointment.create(data);
 
   return appointment;
 };
@@ -90,6 +83,17 @@ export const updateAppointment = async (id, data) => {
 
   if (!appointment) {
     throw new Error("Appointment not found");
+  }
+
+  if (data.appointmentDate) {
+    const exists = await Appointment.findOne({
+      where: {
+        appointmentDate: data.appointmentDate,
+        barberId: data.barberId || appointment.barberId,
+        id: { [Op.ne]: id },
+      },
+    });
+    if (exists) throw new Error("This appointment is already booked");
   }
 
   return await appointment.update(data);

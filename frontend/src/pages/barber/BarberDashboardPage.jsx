@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { getBarberAppointmentsService } from "./barber.services";
+import { cancelAppointmentService } from "../../services/appointments.services";
 import AppointmentModal from "../../components/AppointmentModal/AppointmentModal";
+import AppointmentEditModal from "../../components/AppointmentEditModal/AppointmentEditModal";
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import "../../styles/barberDashboard.css";
 import "../../styles/appointmentModal.css";
 
@@ -9,6 +12,23 @@ function BarberDashboardPage() {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [editingAppointment, setEditingAppointment] = useState(null);
+  const [cancelingId, setCancelingId] = useState(null);
+
+  const handleConfirmCancel = () => {
+    cancelAppointmentService(
+      cancelingId,
+      () => {
+        setAppointments((prev) =>
+          prev.map((a) =>
+            a.id === cancelingId ? { ...a, status: "cancelled" } : a,
+          ),
+        );
+        setCancelingId(null);
+      },
+      () => setCancelingId(null),
+    );
+  };
 
   useEffect(() => {
     document.title = " Inicio | Cráneo Barbero";
@@ -36,17 +56,14 @@ function BarberDashboardPage() {
     (appointment) => appointment.status === "completed",
   );
   const pending = todayAppointments.filter(
-    (appointment) =>
-      appointment.status === "pending" || appointment.status === "confirmed",
+    (appointment) => appointment.status === "pending",
   );
 
   const upcoming = appointments
     .filter(
-      // filtro los futuros turnos
       (appointment) =>
         new Date(appointment.appointmentDate) > now &&
-        (appointment.status === "pending" ||
-          appointment.status === "confirmed"),
+        appointment.status === "pending",
     ) // filtro del más próximo al más lejano
     .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
 
@@ -184,15 +201,21 @@ function BarberDashboardPage() {
                       </span>
 
                       <span className="agenda-service">
-                        {appointment.Cut?.name}
+                        {appointment.cut?.name}
                       </span>
                       <div className="agenda-actions">
                         {!isPassedAppointment && (
                           <>
-                            <button className="btn-agenda-edit">
+                            <button
+                              className="btn-agenda-edit"
+                              onClick={() => setEditingAppointment(appointment)}
+                            >
                               Modificar
                             </button>
-                            <button className="btn-agenda-cancel">
+                            <button
+                              className="btn-agenda-cancel"
+                              onClick={() => setCancelingId(appointment.id)}
+                            >
                               Cancelar
                             </button>
                           </>
@@ -210,6 +233,31 @@ function BarberDashboardPage() {
         appointment={selectedAppointment}
         onClose={() => setSelectedAppointment(null)}
       />
+
+      {editingAppointment && (
+        <AppointmentEditModal
+          appointment={editingAppointment}
+          onClose={() => setEditingAppointment(null)}
+          onSaved={(updatedId, newDate) => {
+            setAppointments((prev) =>
+              prev.map((a) =>
+                a.id === updatedId ? { ...a, appointmentDate: newDate } : a,
+              ),
+            );
+            setEditingAppointment(null);
+          }}
+        />
+      )}
+
+      {cancelingId && (
+        <ConfirmModal
+          title="Cancelar turno"
+          message="¿Estás seguro que querés cancelar este turno? El cliente podrá volver a sacarlo."
+          confirmLabel="Sí, cancelar"
+          onConfirm={handleConfirmCancel}
+          onCancel={() => setCancelingId(null)}
+        />
+      )}
     </div>
   );
 }

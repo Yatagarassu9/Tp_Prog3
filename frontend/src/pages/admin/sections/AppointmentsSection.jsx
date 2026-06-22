@@ -13,6 +13,7 @@ import useAppointmentFilters from "../../../hooks/useAppointmentFilters";
 import AppointmentEditModal from "../../../components/AppointmentEditModal/AppointmentEditModal";
 import PaginationControls from "../../../components/PaginationControls/PaginationControls";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
+import Toast from "../../../components/Toast/Toast";
 import "../../../styles/appointmentModal.css";
 
 // etiquetas y colores por estado, igual que en las otras páginas
@@ -53,6 +54,8 @@ function AppointmentsSection() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => setToast({ message, type });
 
   // usamos el hook de filtros que ya tiene soporte para barbero y sucursal
   const {
@@ -130,6 +133,7 @@ function AppointmentsSection() {
         setFormLoading(false);
         handleCloseCreate();
         loadAppointments();
+        showToast("Turno creado correctamente");
       },
       (err) => {
         setFormLoading(false);
@@ -142,14 +146,15 @@ function AppointmentsSection() {
   const handleEditSuccess = () => {
     setEditingAppointment(null);
     loadAppointments();
+    showToast("Turno actualizado correctamente");
   };
 
   const handleConfirmDelete = () => {
     if (!deletingId) return;
     deleteAppointmentAdminService(
       deletingId,
-      () => { setDeletingId(null); loadAppointments(); },
-      () => setDeletingId(null)
+      () => { setDeletingId(null); loadAppointments(); showToast("Turno eliminado correctamente"); },
+      () => { setDeletingId(null); showToast("No se pudo eliminar el turno", "danger"); }
     );
   };
 
@@ -327,7 +332,7 @@ function AppointmentsSection() {
       {editingAppointment && (
         <AppointmentEditModal
           appointment={editingAppointment}
-          onSuccess={handleEditSuccess}
+          onSaved={handleEditSuccess}
           onClose={() => setEditingAppointment(null)}
         />
       )}
@@ -427,6 +432,14 @@ function AppointmentsSection() {
           onCancel={() => setDeletingId(null)}
           confirmLabel="Eliminar"
           confirmClass="btn-danger"
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>

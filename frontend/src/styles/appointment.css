@@ -24,4 +24,9 @@
   color: grey !important;
 }
 
-/* letter-spacing - espacio entre letras */
+@media (max-width: 600px) {
+  .appointment-page-bg {
+    padding: 1rem;
+    padding-top: 80px;
+  }
+}

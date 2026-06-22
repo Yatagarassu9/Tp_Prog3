@@ -213,3 +213,82 @@
 .agenda-row-past {
   opacity: 0.35;
 }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .barber-dashboard {
+    padding: 90px 14px 60px;
+    gap: 36px;
+  }
+
+  .barber-stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .stat-card {
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 20px;
+    align-items: center;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+
+  .stat-label {
+    margin-top: 0;
+    font-size: 0.85rem;
+  }
+
+  .next-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px;
+  }
+
+  .next-time {
+    font-size: 2.2rem;
+    min-width: unset;
+  }
+
+  .next-badge {
+    align-self: flex-start;
+  }
+
+  .agenda-row {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    grid-template-rows: auto auto;
+    gap: 4px 10px;
+    padding: 12px;
+  }
+
+  .agenda-time {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .agenda-client {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .agenda-service {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: unset;
+    font-size: 0.8rem;
+  }
+
+  .agenda-actions {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    min-width: unset;
+    justify-content: flex-start;
+    margin-top: 6px;
+  }
+}

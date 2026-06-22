@@ -1,11 +1,17 @@
 // modal genérico de confirmación, lo usamos en lugar del window.confirm del navegador
 // recibe un título, un mensaje, y dos funciones: una para confirmar y otra para cancelar
-function ConfirmModal({ title, message, onConfirm, onCancel, confirmLabel = "Confirmar", confirmClass = "btn-agenda-cancel" }) {
+function ConfirmModal({
+  title,
+  message,
+  onConfirm,
+  onCancel,
+  confirmLabel = "Confirmar",
+  confirmClass = "btn-agenda-cancel",
+}) {
   return (
     // si hacemos click fuera del cuadro se cancela
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-
         <h3 className="modal-title">{title}</h3>
 
         {/* mensaje descriptivo de lo que se está por hacer */}
@@ -17,10 +23,9 @@ function ConfirmModal({ title, message, onConfirm, onCancel, confirmLabel = "Con
             {confirmLabel}
           </button>
           <button className="modal-close" onClick={onCancel}>
-            Cancelar
+            Volver
           </button>
         </div>
-
       </div>
     </div>
   );

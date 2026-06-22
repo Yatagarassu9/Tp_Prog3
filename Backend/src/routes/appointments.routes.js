@@ -94,6 +94,21 @@ router.post(
 
   async (req, res) => {
     try {
+      const { appointmentDate, barberId, clientId, cutId } = req.body;
+
+      if (!appointmentDate || isNaN(new Date(appointmentDate).getTime())) {
+        return res.status(400).json({ error: "appointmentDate must be a valid date" });
+      }
+      if (!Number.isInteger(Number(barberId)) || Number(barberId) <= 0) {
+        return res.status(400).json({ error: "barberId must be a positive integer" });
+      }
+      if (!Number.isInteger(Number(clientId)) || Number(clientId) <= 0) {
+        return res.status(400).json({ error: "clientId must be a positive integer" });
+      }
+      if (!Number.isInteger(Number(cutId)) || Number(cutId) <= 0) {
+        return res.status(400).json({ error: "cutId must be a positive integer" });
+      }
+
       const appointment = await createAppointment(req.body);
 
       res.status(201).json(appointment);

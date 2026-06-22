@@ -10,7 +10,9 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
   const existingDate = new Date(appointment.appointmentDate);
 
   // estado para la nueva fecha elegida (formato YYYY-MM-DD que pide el input date)
-  const [newDate, setNewDate] = useState(existingDate.toISOString().slice(0, 10));
+  const [newDate, setNewDate] = useState(
+    existingDate.toISOString().slice(0, 10),
+  );
 
   // buscamos el slot que coincide con la hora actual del turno para pre-seleccionarlo
   const existingHours = existingDate.getHours().toString().padStart(2, "0");
@@ -19,7 +21,9 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
   const matchedSlot = timeSlots.find((s) => s.time === existingTimeStr);
 
   // estado para el horario elegido, arranca con el del turno si existe
-  const [newTime, setNewTime] = useState(matchedSlot ? matchedSlot.id.toString() : "");
+  const [newTime, setNewTime] = useState(
+    matchedSlot ? matchedSlot.id.toString() : "",
+  );
 
   // para mostrar mensajes de error o éxito
   const [error, setError] = useState("");
@@ -70,17 +74,18 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
     // click fuera del cuadro cierra el modal
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-
         <h3 className="modal-title">Modificar turno</h3>
 
         {/* info del turno para que el usuario sepa cuál está editando */}
         <div className="modal-row">
           <span className="modal-label">Cliente</span>
-          <span>{appointment.client?.name || appointment.barber?.name || "—"}</span>
+          <span>
+            {appointment.client?.name || appointment.barber?.name || "—"}
+          </span>
         </div>
         <div className="modal-row">
           <span className="modal-label">Servicio</span>
-          <span>{appointment.Cut?.name || "—"}</span>
+          <span>{appointment.cut?.name || "—"}</span>
         </div>
 
         {/* selector de fecha, no dejamos elegir días pasados */}
@@ -128,7 +133,6 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
             Cancelar
           </button>
         </div>
-
       </div>
     </div>
   );
