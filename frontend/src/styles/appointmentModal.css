@@ -59,3 +59,49 @@
   transition: background 0.15s;
   align-self: flex-end;
 }
+
+.modal-close:hover {
+  background: rgba(255, 200, 49, 0.08);
+}
+
+/* texto de ayuda debajo de los campos */
+.modal-hint {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  margin: 0;
+  font-style: italic;
+}
+
+/* mensaje de error dentro del modal */
+.modal-error {
+  color: #ff6b6b;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* fila de botones al pie del modal (confirmar / cancelar) */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* input de fecha y select de horario dentro de los modales */
+.modal-date-input {
+  background: #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  flex: 1;
+  min-width: 0;
+  color-scheme: dark;
+}
+
+.modal-date-input:focus {
+  outline: none;
+  border-color: rgba(255, 200, 49, 0.4);
+}

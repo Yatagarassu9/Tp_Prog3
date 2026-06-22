@@ -62,6 +62,18 @@ function Navbar() {
           </>
         )}
 
+        {/* Se ve si el usuario logueado es admin */}
+        {user?.role === "admin" && (
+          <>
+            <Link to="/admin" className={isActive("/admin")}>
+              Inicio
+            </Link>
+            <Link to="/admin/manage" className={isActive("/admin/manage")}>
+              Gestionar
+            </Link>
+          </>
+        )}
+
         {/* Sección de autenticación, cambia segun quien sea */}
         {user?.role === "barber" ? (
           <div className="navbar-barber-session">
@@ -69,6 +81,30 @@ function Navbar() {
             <button className="navbar-barber-logout" onClick={handleLogout}>
               Cerrar sesión
             </button>
+          </div>
+        ) : user?.role === "admin" ? (
+          // dropdown de mi cuenta para el admin
+          <div className="navbar-account" ref={dropdownRef}>
+            <button
+              className="navbar-account-btn"
+              onClick={() => setDropdownOpen((v) => !v)}
+            >
+              Mi Cuenta{" "}
+              <span className="navbar-chevron">{dropdownOpen ? "▴" : "▾"}</span>
+            </button>
+            {dropdownOpen && (
+              <div className="navbar-dropdown">
+                <Link to="/admin/account/change-password" onClick={closeDropdown}>
+                  Cambiar contraseña
+                </Link>
+                <button
+                  className="navbar-dropdown-logout"
+                  onClick={handleLogout}
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
           </div>
         ) : user ? (
           <div className="navbar-account" ref={dropdownRef}>

@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import {
-  getMyAppointmentsService,
-  cancelAppointmentService,
-  updateAppointmentService,
-} from "../../components/auth/account.services";
+import { getMyAppointmentsService } from "../../components/auth/account.services";
+import { cancelAppointmentService } from "../../services/appointments.services";
+import AppointmentEditModal from "../../components/AppointmentEditModal/AppointmentEditModal";
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 
-import timeSlots from "../../data/timeSlots";
-
+// etiquetas y colores para cada estado del turno
 const STATUS_LABELS = {
   pending: "Pendiente",
   confirmed: "Confirmado",
@@ -27,19 +25,25 @@ function MyAppointmentsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // todos los turnos del cliente
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [editingId, setEditingId] = useState(null);
-  const [newDate, setNewDate] = useState("");
-  const [newTime, setNewTime] = useState("");
-  const [actionLoading, setActionLoading] = useState(false);
+
+  // turno que se está por cancelar, para mostrar el modal de confirmación
+  const [cancelingId, setCancelingId] = useState(null);
+
+  // turno que se está editando, para mostrar el modal de edición
+  const [editingAppointment, setEditingAppointment] = useState(null);
+
+  // mensaje de feedback después de una acción (cancelar o modificar)
   const [actionMsg, setActionMsg] = useState({ id: null, text: "", type: "" });
 
   useEffect(() => {
-    document.title = " Mis turnos| Cráneo Barbero";
+    document.title = " Mis turnos | Cráneo Barbero";
   }, []);
 
+  // función para traer los turnos del servidor, la reutilizamos después de cada acción
   const fetchAppointments = () => {
     setLoading(true);
     setError("");
@@ -59,81 +63,23 @@ function MyAppointmentsPage() {
     if (user) fetchAppointments();
   }, [user]);
 
-  const handleCancel = (appointmentId) => {
-    if (!window.confirm("¿Estás seguro que querés cancelar este turno?"))
-      return;
-    setActionLoading(true);
+  // cuando el usuario confirma la cancelación en el modal
+  const handleConfirmCancel = () => {
     cancelAppointmentService(
-      appointmentId,
+      cancelingId,
       () => {
-        setActionLoading(false);
-        setActionMsg({
-          id: appointmentId,
-          text: "Turno cancelado.",
-          type: "success",
-        });
-        fetchAppointments();
+        // marcamos el turno como cancelado en el array local sin recargar
+        setAppointments((prev) =>
+          prev.map((a) =>
+            a.id === cancelingId ? { ...a, status: "cancelled" } : a,
+          ),
+        );
+        setActionMsg({ id: cancelingId, text: "Turno cancelado.", type: "success" });
+        setCancelingId(null);
       },
       (err) => {
-        setActionLoading(false);
-        setActionMsg({ id: appointmentId, text: err.message, type: "danger" });
-      },
-    );
-  };
-
-  const handleStartEdit = (appointment) => {
-    const date = new Date(appointment.appointmentDate);
-    setNewDate(date.toISOString().slice(0, 10));
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const currentTime = `${hours}:${minutes}`;
-    const matchedSlot = timeSlots.find((s) => s.time === currentTime);
-    setNewTime(matchedSlot ? matchedSlot.id.toString() : "");
-    setEditingId(appointment.id);
-    setActionMsg({ id: null, text: "", type: "" });
-  };
-
-  const handleSaveEdit = (appointmentId) => {
-    if (!newDate || !newTime) {
-      setActionMsg({
-        id: appointmentId,
-        text: "Seleccioná fecha y horario.",
-        type: "danger",
-      });
-      return;
-    }
-    const slot = timeSlots.find((s) => s.id === Number(newTime));
-    if (!slot) return;
-    const [h, m] = slot.time.split(":");
-    const combined = new Date(newDate);
-    combined.setHours(Number(h), Number(m), 0, 0);
-
-    if (combined <= new Date()) {
-      setActionMsg({
-        id: appointmentId,
-        text: "La fecha debe ser futura.",
-        type: "danger",
-      });
-      return;
-    }
-
-    setActionLoading(true);
-    updateAppointmentService(
-      appointmentId,
-      combined.toISOString(),
-      () => {
-        setActionLoading(false);
-        setEditingId(null);
-        setActionMsg({
-          id: appointmentId,
-          text: "Turno modificado correctamente.",
-          type: "success",
-        });
-        fetchAppointments();
-      },
-      (err) => {
-        setActionLoading(false);
-        setActionMsg({ id: appointmentId, text: err.message, type: "danger" });
+        setActionMsg({ id: cancelingId, text: err.message, type: "danger" });
+        setCancelingId(null);
       },
     );
   };
@@ -160,6 +106,8 @@ function MyAppointmentsPage() {
   }
 
   const today = new Date();
+
+  // separamos los turnos activos de los ya terminados o cancelados
   const activeAppointments = appointments.filter(
     (a) => a.status !== "cancelled" && a.status !== "completed",
   );
@@ -205,7 +153,6 @@ function MyAppointmentsPage() {
       {activeAppointments.map((appointment) => {
         const date = new Date(appointment.appointmentDate);
         const isPast = date <= today;
-        const isEditing = editingId === appointment.id;
 
         return (
           <div
@@ -214,10 +161,7 @@ function MyAppointmentsPage() {
           >
             <div className="d-flex justify-content-between align-items-start mb-2">
               <div>
-                <span
-                  className="text-warning fw-bold"
-                  style={{ fontSize: "1rem" }}
-                >
+                <span className="text-warning fw-bold" style={{ fontSize: "1rem" }}>
                   {date.toLocaleDateString("es-AR", {
                     weekday: "long",
                     year: "numeric",
@@ -225,10 +169,7 @@ function MyAppointmentsPage() {
                     day: "numeric",
                   })}
                 </span>
-                <span
-                  className="text-secondary ms-2"
-                  style={{ fontSize: "0.9rem" }}
-                >
+                <span className="text-secondary ms-2" style={{ fontSize: "0.9rem" }}>
                   {date.toLocaleTimeString("es-AR", {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -247,6 +188,7 @@ function MyAppointmentsPage() {
               </p>
             )}
 
+            {/* mensaje de feedback después de cancelar o modificar */}
             {actionMsg.id === appointment.id && actionMsg.text && (
               <div
                 className={`alert alert-${actionMsg.type} py-2 mt-2`}
@@ -256,75 +198,28 @@ function MyAppointmentsPage() {
               </div>
             )}
 
-            {!isPast && !isEditing && (
+            {/* solo mostramos los botones si el turno todavía no pasó */}
+            {!isPast && (
               <div className="d-flex gap-2 mt-3">
                 <button
                   className="btn btn-outline-warning btn-sm"
-                  onClick={() => handleStartEdit(appointment)}
-                  disabled={actionLoading}
+                  onClick={() => setEditingAppointment(appointment)}
                 >
                   Modificar
                 </button>
                 <button
                   className="btn btn-outline-danger btn-sm"
-                  onClick={() => handleCancel(appointment.id)}
-                  disabled={actionLoading}
+                  onClick={() => setCancelingId(appointment.id)}
                 >
                   Cancelar turno
                 </button>
-              </div>
-            )}
-
-            {isEditing && (
-              <div className="mt-3">
-                <div className="d-flex gap-2 mb-2">
-                  <input
-                    type="date"
-                    value={newDate}
-                    min={new Date().toISOString().slice(0, 10)}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className="form-control bg-secondary text-white border-secondary"
-                    style={{ flex: 1 }}
-                  />
-                  <select
-                    value={newTime}
-                    onChange={(e) => setNewTime(e.target.value)}
-                    className="form-select bg-secondary text-white border-secondary"
-                    style={{ flex: 1 }}
-                  >
-                    <option value="">Horario</option>
-                    {timeSlots.map((slot) => (
-                      <option key={slot.id} value={slot.id}>
-                        {slot.time}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="d-flex gap-2">
-                  <button
-                    className="btn btn-warning text-dark btn-sm"
-                    onClick={() => handleSaveEdit(appointment.id)}
-                    disabled={actionLoading}
-                  >
-                    {actionLoading ? "Guardando..." : "Guardar cambio"}
-                  </button>
-                  <button
-                    className="btn btn-outline-secondary btn-sm"
-                    onClick={() => {
-                      setEditingId(null);
-                      setActionMsg({ id: null, text: "", type: "" });
-                    }}
-                    disabled={actionLoading}
-                  >
-                    Cancelar
-                  </button>
-                </div>
               </div>
             )}
           </div>
         );
       })}
 
+      {/* historial de turnos completados y cancelados */}
       {pastAppointments.length > 0 && (
         <>
           <h5 className="text-secondary mt-4 mb-3">Historial</h5>
@@ -337,10 +232,7 @@ function MyAppointmentsPage() {
                 style={{ opacity: 0.7 }}
               >
                 <div className="d-flex justify-content-between align-items-center">
-                  <span
-                    className="text-secondary"
-                    style={{ fontSize: "0.9rem" }}
-                  >
+                  <span className="text-secondary" style={{ fontSize: "0.9rem" }}>
                     {date.toLocaleDateString("es-AR", {
                       day: "numeric",
                       month: "long",
@@ -353,9 +245,7 @@ function MyAppointmentsPage() {
                     })}
                     {appointment.barber && ` · ${appointment.barber.name}`}
                   </span>
-                  <span
-                    className={`badge bg-${STATUS_COLORS[appointment.status]}`}
-                  >
+                  <span className={`badge bg-${STATUS_COLORS[appointment.status]}`}>
                     {STATUS_LABELS[appointment.status]}
                   </span>
                 </div>
@@ -363,6 +253,35 @@ function MyAppointmentsPage() {
             );
           })}
         </>
+      )}
+
+      {/* modal para modificar la fecha y horario del turno */}
+      {editingAppointment && (
+        <AppointmentEditModal
+          appointment={editingAppointment}
+          onClose={() => setEditingAppointment(null)}
+          onSaved={(updatedId, newDate) => {
+            // actualizamos la fecha en el array local sin recargar
+            setAppointments((prev) =>
+              prev.map((a) =>
+                a.id === updatedId ? { ...a, appointmentDate: newDate } : a,
+              ),
+            );
+            setActionMsg({ id: updatedId, text: "Turno modificado correctamente.", type: "success" });
+            setEditingAppointment(null);
+          }}
+        />
+      )}
+
+      {/* modal de confirmación antes de cancelar */}
+      {cancelingId && (
+        <ConfirmModal
+          title="Cancelar turno"
+          message="¿Estás seguro que querés cancelar este turno?"
+          confirmLabel="Sí, cancelar"
+          onConfirm={handleConfirmCancel}
+          onCancel={() => setCancelingId(null)}
+        />
       )}
     </div>
   );
