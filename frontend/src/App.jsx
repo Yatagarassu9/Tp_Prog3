@@ -10,6 +10,8 @@ import ChangePasswordPage from "./pages/client/ChangePasswordPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminManagePage from "./pages/admin/AdminManagePage";
 import NotFoundPage from "./pages/public/NotFoundPage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminManagePage from "./pages/admin/AdminManagePage";
 import Layout from "./components/Layout/Layout";
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from "react-router";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -61,6 +63,11 @@ function App() {
                 <Route index element={<AdminDashboardPage />} />
                 <Route path="manage" element={<AdminManagePage />} />
               </Route>
+            </Route>
+
+            <Route path="/admin">
+              <Route index element={<AdminDashboardPage />} />
+              <Route path="manage" element={<AdminManagePage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />
