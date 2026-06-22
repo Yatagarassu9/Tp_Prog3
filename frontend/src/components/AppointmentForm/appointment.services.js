@@ -5,6 +5,13 @@ const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("barberia-token")}`,
 });
 
+export const getBookedSlotsService = (barberId, date) => {
+  const dateStr = date instanceof Date ? date.toISOString().split("T")[0] : date;
+  return fetch(
+    `${BASE_URL}/appointments/availability?barberId=${barberId}&date=${dateStr}`
+  ).then((res) => res.json());
+};
+
 export const createAppointmentService = (
   clientId,
   barberId,

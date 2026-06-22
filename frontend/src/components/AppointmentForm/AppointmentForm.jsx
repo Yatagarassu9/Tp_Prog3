@@ -84,9 +84,25 @@ function AppointmentForm({
     );
   };
 
-  const handleRegisterSuccess = () => {
-    // Tras registrarse, vuelve al login para iniciar sesión
-    setView("login");
+  const handleRegisterSuccess = (token) => {
+    login(token);
+    closeModal();
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    const slot = timeSlots.find((s) => s.id === hours);
+    if (!slot) return;
+    const [h, m] = slot.time.split(":");
+    const date = new Date(day);
+    date.setHours(Number(h), Number(m), 0, 0);
+    setConfirmError("");
+    setConfirmLoading(true);
+    createAppointmentService(
+      decoded.id,
+      barber,
+      date.toISOString(),
+      cut,
+      () => { setConfirmLoading(false); setConfirmed(true); },
+      (err) => { setConfirmLoading(false); setConfirmError(err.message); }
+    );
   };
 
   return (

@@ -1,0 +1,386 @@
+@import "./variables.css";
+
+/* ===== LAYOUT GENERAL DEL PANEL ADMIN ===== */
+/* el panel admin tiene más ancho que las otras páginas porque tiene tablas */
+.admin-dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 120px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.admin-dashboard-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-title {
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.admin-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ===== STATS CARDS ===== */
+/* grilla principal con 4 cards por fila */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* segunda fila con 2 cards más anchas */
+.admin-stats-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.admin-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px;
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 200, 49, 0.18);
+  border-radius: 14px;
+  box-shadow:
+    0 0 24px rgba(255, 200, 49, 0.06),
+    inset 0 0 12px rgba(255, 200, 49, 0.02);
+  text-align: center;
+}
+
+.admin-stat-card-wide {
+  padding: 32px 24px;
+}
+
+.admin-stat-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* cuando el valor es texto largo como un nombre de servicio, reducimos el tamaño */
+.admin-stat-value-text {
+  font-size: 1.3rem;
+  color: var(--accent-primary);
+}
+
+.admin-stat-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+/* ===== BREAKDOWN TABLES ===== */
+/* dos mini-tablas lado a lado para mostrar el desglose por sucursal y barbero */
+.admin-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.admin-breakdown-card {
+  background-color: #1a1a1a;
+  border: 1px solid rgba(255, 200, 49, 0.18);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.admin-breakdown-title {
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.admin-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-breakdown-table th {
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.admin-breakdown-table td {
+  color: var(--text-primary);
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.admin-breakdown-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== ACCESOS RÁPIDOS ===== */
+.admin-section-title {
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.admin-quick-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-quick-btn {
+  background: rgba(255, 200, 49, 0.08);
+  border: 1px solid rgba(255, 200, 49, 0.3);
+  color: var(--accent-primary);
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.admin-quick-btn:hover {
+  background: rgba(255, 200, 49, 0.16);
+  border-color: rgba(255, 200, 49, 0.5);
+}
+
+/* ===== TABS DE GESTIÓN ===== */
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0;
+  flex-wrap: wrap;
+}
+
+.admin-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.admin-tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.admin-tab-btn-active {
+  color: var(--accent-primary);
+  border-bottom-color: var(--accent-primary);
+}
+
+.admin-tab-content {
+  min-height: 400px;
+}
+
+/* ===== SECCIONES DE GESTIÓN ===== */
+.admin-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* header de cada sección con el título y el botón de agregar */
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ===== TABLAS ===== */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-table th {
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  color: var(--text-primary);
+  padding: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+/* fila alternada para mejorar la lectura */
+.admin-table tbody tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.admin-table tbody tr:hover td {
+  background-color: rgba(255, 200, 49, 0.04);
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ===== FILTROS DE TURNOS ===== */
+.admin-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* fila de los selects de fechas, barbero y sucursal */
+.admin-filter-row-selects {
+  gap: 10px;
+}
+
+.admin-filter-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-secondary);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.admin-filter-btn:hover {
+  border-color: rgba(255, 200, 49, 0.4);
+  color: var(--text-primary);
+}
+
+.admin-filter-btn-active {
+  background: rgba(255, 200, 49, 0.12);
+  border-color: rgba(255, 200, 49, 0.5);
+  color: var(--accent-primary);
+}
+
+.admin-filter-dates {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-filter-dates input {
+  max-width: 155px;
+}
+
+.admin-filter-select {
+  max-width: 200px;
+}
+
+/* ===== MODAL DE FORMULARIO ===== */
+/* overlay que cubre toda la pantalla cuando se abre el modal */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.admin-modal {
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 200, 49, 0.25);
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.admin-modal-title {
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-stats-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-breakdown-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .admin-filter-dates {
+    flex-wrap: wrap;
+  }
+
+  .admin-filter-select {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-tabs {
+    gap: 0;
+  }
+
+  .admin-tab-btn {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+}

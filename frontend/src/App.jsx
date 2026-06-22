@@ -7,6 +7,7 @@ import BarberDashboardPage from "./pages/barber/BarberDashboardPage";
 import BarberSchedulePage from "./pages/barber/BarberSchedulePage";
 import MyAppointmentsPage from "./pages/client/MyAppointmentsPage";
 import ChangePasswordPage from "./pages/client/ChangePasswordPage";
+import NotFoundPage from "./pages/public/NotFoundPage";
 import Layout from "./components/Layout/Layout";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router";
 import { AuthProvider } from "./context/AuthContext";
@@ -42,6 +43,7 @@ function App() {
               <Route path="change-password" element={<ChangePasswordPage />} />
             </Route>
           </Route>
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
