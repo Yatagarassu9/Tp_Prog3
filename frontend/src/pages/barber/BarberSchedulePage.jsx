@@ -1,88 +1,74 @@
 import { useState, useEffect } from "react";
 import { getBarberAppointmentsService } from "./barber.services";
+import { cancelAppointmentService } from "../../services/appointments.services";
+import useAppointmentFilters from "../../hooks/useAppointmentFilters";
 import AppointmentModal from "../../components/AppointmentModal/AppointmentModal";
+import AppointmentEditModal from "../../components/AppointmentEditModal/AppointmentEditModal";
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
+import PaginationControls from "../../components/PaginationControls/PaginationControls";
 import "../../styles/barberDashboard.css";
 import "../../styles/barberSchedule.css";
 import "../../styles/appointmentModal.css";
 
 function BarberSchedulePage() {
+  // los turnos que vienen del servidor
   const [appointments, setAppointments] = useState([]);
-  const [weekOffset, setWeekOffset] = useState(0);
+
+  // turno seleccionado para ver el detalle en el modal
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+
+  // turno seleccionado para modificar fecha/horario
+  const [editingAppointment, setEditingAppointment] = useState(null);
+
+  // turno seleccionado para cancelar, lo usamos para el modal de confirmación
+  const [cancelingId, setCancelingId] = useState(null);
+
+  // controla si el modal del selector de fechas está abierto
+  const [showDateModal, setShowDateModal] = useState(false);
+
+  // el hook nos da todo el filtrado y paginado ya calculado
+  const {
+    activeFilter, setActiveFilter,
+    dateFrom, setDateFrom,
+    dateTo, setDateTo,
+    pageSize, setPageSize,
+    currentPage, setCurrentPage,
+    filtered, paginated, totalPages,
+  } = useAppointmentFilters(appointments);
 
   useEffect(() => {
     document.title = " Mi agenda | Cráneo Barbero";
   }, []);
 
   useEffect(() => {
+    // cuando carga la página traemos todos los turnos del barber
     getBarberAppointmentsService(
       (data) => setAppointments(data),
       () => setAppointments([]),
     );
   }, []);
 
-  const now = new Date();
-
-  const getWeekStart = (offset) => {
-    const d = new Date(now);
-    const day = d.getDay();
-    const diff = day === 0 ? -6 : 1 - day;
-    d.setDate(d.getDate() + diff + offset * 7);
-    d.setHours(0, 0, 0, 0);
-    return d;
+  // cuando el usuario confirma la cancelación en el modal
+  const handleConfirmCancel = () => {
+    cancelAppointmentService(
+      cancelingId,
+      () => {
+        // actualizamos el estado local marcando el turno como cancelado
+        setAppointments((prev) =>
+          prev.map((a) =>
+            a.id === cancelingId ? { ...a, status: "cancelled" } : a,
+          ),
+        );
+        setCancelingId(null);
+      },
+      () => setCancelingId(null),
+    );
   };
 
-  const weekStart = getWeekStart(weekOffset);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-  weekEnd.setHours(23, 59, 59, 999);
+  const now = new Date();
 
-  const isCurrentWeek = weekOffset === 0;
-
-  const weekDays = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(weekStart);
-    d.setDate(weekStart.getDate() + i);
-    return d;
-  });
-
-  const weekAppointments = appointments.filter((appointment) => {
-    const date = new Date(appointment.appointmentDate);
-    return (
-      date >= weekStart && date <= weekEnd && appointment.status !== "cancelled"
-    );
-  });
-
-  const weekPending = weekAppointments.filter(
-    (appointment) =>
-      appointment.status === "pending" || appointment.status === "confirmed",
-  );
-  const weekAttended = weekAppointments.filter(
-    (appointment) => appointment.status === "completed",
-  );
-
-  const nextAppointment = isCurrentWeek
-    ? appointments
-        .filter(
-          (appointment) =>
-            new Date(appointment.appointmentDate) > now &&
-            (appointment.status === "pending" ||
-              appointment.status === "confirmed"),
-        )
-        .sort(
-          (a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate),
-        )[0] || null
-    : null;
-
-  const appointmentsForDay = (day) =>
-    weekAppointments
-      .filter(
-        (appointment) =>
-          new Date(appointment.appointmentDate).toDateString() ===
-          day.toDateString(),
-      )
-      .sort(
-        (a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate),
-      );
+  // para saber si el horario de un turno ya pasó
+  const isPast = (date) => new Date(date) < now;
 
   const formatTime = (dateStr) =>
     new Date(dateStr).toLocaleTimeString("es-AR", {
@@ -97,125 +83,194 @@ function BarberSchedulePage() {
       month: "long",
     });
 
-  const formatShortDate = (date) =>
-    date.toLocaleDateString("es-AR", { day: "numeric", month: "short" });
-  const isPast = (date) => new Date(date) < now;
-
-  const weekLabel = `${formatShortDate(weekStart)} — ${formatShortDate(weekEnd)}`;
-
   return (
     <div className="barber-dashboard page-transition">
-      {/* Selector de semana */}
-      <section className="week-selector">
+
+      {/* botones para filtrar por estado del turno */}
+      <section className="agenda-filters">
+        {[
+          { key: "all", label: "Todos" },
+          { key: "pending", label: "Por atender" },
+          { key: "completed", label: "Ya atendidos" },
+          { key: "cancelled", label: "Cancelados" },
+        ].map((f) => (
+          <button
+            key={f.key}
+            className={`btn-filter ${activeFilter === f.key ? "btn-filter-active" : ""}`}
+            onClick={() => { setActiveFilter(f.key); if (f.key === "all") { setDateFrom(""); setDateTo(""); } }}
+          >
+            {f.label}
+          </button>
+        ))}
+
+        {/* botón para abrir el selector de rango de fechas */}
         <button
-          className="week-arrow"
-          onClick={() => setWeekOffset((o) => o - 1)}
+          className="btn-filter btn-filter-date"
+          onClick={() => setShowDateModal(true)}
         >
-          <i className="ti ti-chevron-left" />
+          {dateFrom || dateTo
+            ? `${dateFrom || "..."} → ${dateTo || "..."}`
+            : "Seleccionar rango de días"}
         </button>
-        <span className="week-label">{weekLabel}</span>
-        <button
-          className="week-arrow"
-          onClick={() => setWeekOffset((o) => o + 1)}
-        >
-          <i className="ti ti-chevron-right" />
-        </button>
+
+        {/* si hay rango activo mostramos botón para limpiarlo */}
+        {(dateFrom || dateTo) && (
+          <button
+            className="btn-filter btn-filter-clear"
+            onClick={() => { setDateFrom(""); setDateTo(""); }}
+          >
+            Limpiar rango
+          </button>
+        )}
       </section>
 
-      {/* Stats: 3 si es semana actual, 1 si es otra */}
-      {isCurrentWeek ? (
-        <section className="barber-stats">
-          <div className="stat-card">
-            <span className="stat-value">{weekAppointments.length}</span>
-            <span className="stat-label">Turnos esta semana</span>
+      {/* modal del selector de rango de fechas */}
+      {showDateModal && (
+        <div className="modal-overlay" onClick={() => setShowDateModal(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">Seleccionar rango de días</h3>
+
+            <div className="modal-row">
+              <span className="modal-label">Desde</span>
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="modal-date-input"
+              />
+            </div>
+
+            <div className="modal-row">
+              <span className="modal-label">Hasta</span>
+              <input
+                type="date"
+                value={dateTo}
+                min={dateFrom || undefined}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="modal-date-input"
+              />
+            </div>
+
+            {/* aclaración para ver solo un día */}
+            <p className="modal-hint">
+              Para ver solo un día, poné la misma fecha en los dos campos.
+            </p>
+
+            <button className="modal-close" onClick={() => setShowDateModal(false)}>
+              Aplicar
+            </button>
           </div>
-          <div className="stat-card">
-            <span className="stat-value">{weekPending.length}</span>
-            <span className="stat-label">Por atender</span>
-          </div>
-          <div className="stat-card">
-            <span className="stat-value">{weekAttended.length}</span>
-            <span className="stat-label">Ya atendidos</span>
-          </div>
-        </section>
-      ) : (
-        <section className="barber-stats">
-          <div className="stat-card stat-card-single">
-            <span className="stat-value">{weekAppointments.length}</span>
-            <span className="stat-label">Turnos esta semana</span>
-          </div>
-        </section>
+        </div>
       )}
 
-      {/* Agenda agrupada por día */}
+      {/* controles de paginado arriba de la lista */}
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+        total={filtered.length}
+      />
+
+      {/* lista de turnos filtrados y paginados */}
       <section className="barber-agenda">
-        {weekDays.map((day) => {
-          const dayAppointments = appointmentsForDay(day);
-          const isPastDay =
-            day.toDateString() !== now.toDateString() && isPast(day);
-          const isToday = day.toDateString() === now.toDateString();
+        {paginated.length === 0 ? (
+          <p className="no-appointments-day">No hay turnos para mostrar.</p>
+        ) : (
+          paginated.map((appointment) => {
+            const isPassedAppointment = isPast(appointment.appointmentDate);
+            return (
+              <div
+                key={appointment.id}
+                className={`agenda-row ${isPassedAppointment ? "agenda-row-past" : ""}`}
+              >
+                <span className="agenda-time">
+                  {formatTime(appointment.appointmentDate)}
+                </span>
+                <span className="agenda-date">
+                  {formatDayTitle(new Date(appointment.appointmentDate))}
+                </span>
 
-          return (
-            <div
-              key={day.toDateString()}
-              className={`agenda-day ${isPastDay ? "agenda-day-past" : ""}`} // usamos el css para tachar los dias
-            >
-              <div className="agenda-day-title">
-                <span>{formatDayTitle(day)}</span>
-                <div className="agenda-day-line" />
-              </div>
-              {dayAppointments.length === 0 ? (
-                <p className="no-appointments-day">
-                  Todavía no hay turnos solicitados.
-                </p>
-              ) : (
-                dayAppointments.map((appointment) => {
-                  const isNext =
-                    isCurrentWeek && nextAppointment?.id === appointment.id;
-                  const isPassedAppointment =
-                    isToday && isPast(appointment.appointmentDate);
-                  return (
-                    <div
-                      key={appointment.id}
-                      className={`agenda-row ${isNext ? "agenda-row-next" : ""} ${isPassedAppointment ? "agenda-row-past" : ""}`}
-                    >
-                      <span className="agenda-time">
-                        {formatTime(appointment.appointmentDate)}
-                      </span>
-                      <span
-                        className="agenda-client"
-                        onClick={() => setSelectedAppointment(appointment)}
+                {/* al hacer click en el nombre se abre el modal de detalle */}
+                <span
+                  className="agenda-client"
+                  onClick={() => setSelectedAppointment(appointment)}
+                >
+                  {appointment.client?.name}
+                </span>
+
+                <span className="agenda-service">{appointment.Cut?.name}</span>
+
+                <div className="agenda-actions">
+                  {/* solo mostramos los botones si el turno no pasó y no está cancelado */}
+                  {!isPassedAppointment && appointment.status !== "cancelled" && (
+                    <>
+                      <button
+                        className="btn-agenda-edit"
+                        onClick={() => setEditingAppointment(appointment)}
                       >
-                        {appointment.client?.name}
-                      </span>
-
-                      <span className="agenda-service">
-                        {appointment.Cut?.name}
-                      </span>
-                      <div className="agenda-actions">
-                        {!isPassedAppointment && !isPastDay && (
-                          <>
-                            <button className="btn-agenda-edit">
-                              Modificar
-                            </button>
-                            <button className="btn-agenda-cancel">
-                              Cancelar
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          );
-        })}
+                        Modificar
+                      </button>
+                      <button
+                        className="btn-agenda-cancel"
+                        onClick={() => setCancelingId(appointment.id)}
+                      >
+                        Cancelar
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
       </section>
+
+      {/* controles de paginado abajo de la lista también */}
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+        total={filtered.length}
+      />
+
+      {/* modal de detalle del turno */}
       <AppointmentModal
         appointment={selectedAppointment}
         onClose={() => setSelectedAppointment(null)}
       />
+
+      {/* modal para modificar fecha y horario del turno */}
+      {editingAppointment && (
+        <AppointmentEditModal
+          appointment={editingAppointment}
+          onClose={() => setEditingAppointment(null)}
+          onSaved={(updatedId, newDate) => {
+            // actualizamos la fecha del turno en el array local sin recargar
+            setAppointments((prev) =>
+              prev.map((a) =>
+                a.id === updatedId ? { ...a, appointmentDate: newDate } : a,
+              ),
+            );
+            setEditingAppointment(null);
+          }}
+        />
+      )}
+
+      {/* modal de confirmación antes de cancelar un turno */}
+      {cancelingId && (
+        <ConfirmModal
+          title="Cancelar turno"
+          message="¿Estás seguro que querés cancelar este turno? El cliente podrá volver a sacarlo."
+          confirmLabel="Sí, cancelar"
+          onConfirm={handleConfirmCancel}
+          onCancel={() => setCancelingId(null)}
+        />
+      )}
+
     </div>
   );
 }

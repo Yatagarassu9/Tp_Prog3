@@ -6,9 +6,12 @@ import {
   updateBranch,
   deleteBranch,
 } from "../services/branch.service.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { roleMiddleware } from "../middlewares/role.middleware.js";
 
 const router = Router();
 
+// cualquiera puede ver las sucursales para la reserva de turnos
 router.get("/", async (req, res) => {
   try {
     const branch = await getBranches();
@@ -30,7 +33,8 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+// solo el admin puede crear, modificar o eliminar sucursales
+router.post("/", authMiddleware, roleMiddleware("admin"), async (req, res) => {
   try {
     const branch = await createBranch(req.body);
     res.status(201).json(branch);
@@ -39,7 +43,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, roleMiddleware("admin"), async (req, res) => {
   try {
     const branch = await updateBranch(req.params.id, req.body);
     res.status(200).json(branch);
@@ -48,7 +52,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authMiddleware, roleMiddleware("admin"), async (req, res) => {
   try {
     const branch = await deleteBranch(req.params.id);
     res.status(200).json(branch);

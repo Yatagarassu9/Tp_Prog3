@@ -1,30 +1,15 @@
+// servicios específicos del cliente autenticado
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 const authHeaders = () => ({
   "Content-Type": "application/json",
-  Authorization: `Bearer ${localStorage.getItem("barberia-token")}`
+  Authorization: `Bearer ${localStorage.getItem("barberia-token")}`,
 });
 
-export const changePasswordService = (userId, newPassword, onSuccess, onError) => {
-  fetch(`${BASE_URL}/users/${userId}`, {
-    method: "PUT",
-    headers: authHeaders(),
-    body: JSON.stringify({ password: newPassword })
-  })
-    .then(async (res) => {
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Error al cambiar contraseña");
-      }
-      return res.json();
-    })
-    .then(onSuccess)
-    .catch(onError);
-};
-
+// trae todos los turnos del cliente que está logueado
 export const getMyAppointmentsService = (onSuccess, onError) => {
   fetch(`${BASE_URL}/appointments/my`, {
-    headers: authHeaders()
+    headers: authHeaders(),
   })
     .then(async (res) => {
       if (!res.ok) {
@@ -37,33 +22,17 @@ export const getMyAppointmentsService = (onSuccess, onError) => {
     .catch(onError);
 };
 
-export const cancelAppointmentService = (appointmentId, onSuccess, onError) => {
-  fetch(`${BASE_URL}/appointments/${appointmentId}`, {
+// cambia la contraseña del usuario
+export const changePasswordService = (userId, newPassword, onSuccess, onError) => {
+  fetch(`${BASE_URL}/users/${userId}`, {
     method: "PUT",
     headers: authHeaders(),
-    body: JSON.stringify({ status: "cancelled" })
+    body: JSON.stringify({ password: newPassword }),
   })
     .then(async (res) => {
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Error al cancelar turno");
-      }
-      return res.json();
-    })
-    .then(onSuccess)
-    .catch(onError);
-};
-
-export const updateAppointmentService = (appointmentId, appointmentDate, onSuccess, onError) => {
-  fetch(`${BASE_URL}/appointments/${appointmentId}`, {
-    method: "PUT",
-    headers: authHeaders(),
-    body: JSON.stringify({ appointmentDate })
-  })
-    .then(async (res) => {
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Error al modificar turno");
+        throw new Error(data.error || "Error al cambiar contraseña");
       }
       return res.json();
     })
