@@ -195,6 +195,13 @@ function AppointmentsSection() {
       hour12: false,
     });
 
+  // lista filtrada por búsqueda de nombre de cliente
+  const displayList = clientSearch.trim()
+    ? paginated.filter((a) =>
+        a.client?.name?.toLowerCase().includes(clientSearch.toLowerCase())
+      )
+    : paginated;
+
   return (
     <div className="admin-section">
       <div className="admin-section-header">
@@ -302,20 +309,14 @@ function AppointmentsSection() {
                 </tr>
               </thead>
               <tbody>
-                {(() => {
-                  const displayList = clientSearch.trim()
-                    ? paginated.filter((a) =>
-                        a.client?.name?.toLowerCase().includes(clientSearch.toLowerCase())
-                      )
-                    : paginated;
-                  if (displayList.length === 0) return (
-                    <tr>
-                      <td colSpan={6} className="text-secondary text-center">
-                        No hay turnos con esos filtros
-                      </td>
-                    </tr>
-                  );
-                  return displayList.map((appointment) => (
+                {displayList.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-secondary text-center">
+                      No hay turnos con esos filtros
+                    </td>
+                  </tr>
+                ) : (
+                  displayList.map((appointment) => (
                     <tr key={appointment.id}>
                       <td>{formatDate(appointment.appointmentDate)}</td>
                       <td>{appointment.client?.name || "—"}</td>
