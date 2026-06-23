@@ -10,7 +10,6 @@ import PaginationControls from "../../../components/PaginationControls/Paginatio
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
 import Toast from "../../../components/Toast/Toast";
 
-// form vacío para crear un barbero nuevo
 const EMPTY_FORM = {
   name: "",
   email: "",
@@ -88,6 +87,16 @@ function BarbersSection() {
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setFormError("");
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm((prev) => ({ ...prev, imageUrl: reader.result }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e) => {
@@ -333,20 +342,22 @@ function BarbersSection() {
               </div>
 
               <div className="mb-4">
+
+                <label className="text-secondary d-block mb-1" style={{ fontSize: "13px" }}>
+                  Foto del barbero (opcional)
+                </label>
                 <input
-                  type="url"
-                  name="imageUrl"
-                  placeholder="URL de foto del barbero (opcional)"
-                  value={form.imageUrl}
-                  onChange={handleChange}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+
                   className="form-control bg-secondary text-white border-secondary"
                 />
                 {form.imageUrl && (
                   <img
                     src={form.imageUrl}
-                    alt="Preview"
-                    style={{ marginTop: "8px", height: "80px", width: "80px", borderRadius: "50%", objectFit: "cover" }}
-                    onError={(e) => { e.target.style.display = "none"; }}
+                    alt="preview"
+                    style={{ width: "72px", height: "72px", objectFit: "cover", borderRadius: "50%", marginTop: "8px", border: "2px solid #ffc107" }}
                   />
                 )}
               </div>

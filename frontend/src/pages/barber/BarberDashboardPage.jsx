@@ -51,7 +51,8 @@ function BarberDashboardPage() {
   // filtramos los turnos que son de hoy
   const todayAppointments = appointments.filter(
     (appointment) =>
-      new Date(appointment.appointmentDate).toDateString() === today,
+      new Date(appointment.appointmentDate).toDateString() === today &&
+      appointment.status !== "cancelled",
   );
 
   // cuantos turnos de hoy ya estan completados
@@ -82,8 +83,15 @@ function BarberDashboardPage() {
     ? Math.round((new Date(nextAppointment.appointmentDate) - now) / 60000)
     : null;
 
-  // construimos la lista de dias con turnos para la seccion de agenda
-  // Set elimina fechas duplicadas para no mostrar el mismo dia dos veces
+  const formatTimeUntil = (minutes) => {
+    if (minutes <= 0) return "ahora";
+    if (minutes < 60) return `En ${minutes} min`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `En ${hours} h`;
+    const days = Math.round(hours / 24);
+    return `En ${days} día${days !== 1 ? "s" : ""}`;
+  };
+
   const futureDays = [
     ...new Set(
       appointments
@@ -167,7 +175,7 @@ function BarberDashboardPage() {
               </span>
               <span className="next-service">{nextAppointment.cut?.name}</span>
             </div>
-            <div className="next-badge">En {minutesUntilNext} min</div>
+            <div className="next-badge">{formatTimeUntil(minutesUntilNext)}</div>
           </div>
         ) : (
           <p className="no-appointments">No hay turnos próximos.</p>

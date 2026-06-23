@@ -91,7 +91,7 @@ function AppointmentPage() {
         />
       )}
       {day && (
-        <CutSelector cuts={cuts} onSelectCut={handleSelectCut} />
+        <CutSelector key={day.toISOString()} cuts={cuts} onSelectCut={handleSelectCut} />
       )}
 
       {day && selectedCut && (

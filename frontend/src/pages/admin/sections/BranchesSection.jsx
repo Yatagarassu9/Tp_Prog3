@@ -64,6 +64,16 @@ function BranchesSection() {
     setFormError("");
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm((prev) => ({ ...prev, imageUrl: reader.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -227,6 +237,25 @@ function BranchesSection() {
                     alt="Preview"
                     style={{ marginTop: "8px", height: "80px", borderRadius: "6px", objectFit: "cover" }}
                     onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                )}
+              </div>
+
+              <div className="mb-4">
+                <label className="text-secondary d-block mb-1" style={{ fontSize: "13px" }}>
+                  Foto de la sucursal (opcional)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="form-control bg-secondary text-white border-secondary"
+                />
+                {form.imageUrl && (
+                  <img
+                    src={form.imageUrl}
+                    alt="preview"
+                    style={{ width: "100%", maxHeight: "120px", objectFit: "cover", borderRadius: "6px", marginTop: "8px", border: "2px solid #ffc107" }}
                   />
                 )}
               </div>
