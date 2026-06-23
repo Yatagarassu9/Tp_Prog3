@@ -13,7 +13,7 @@ function AppointmentModal({ appointment, onClose }) {
         <h3 className="modal-title">Detalle del turno</h3>
         <div className="modal-row"><span className="modal-label">Día:</span><span>{day}</span></div>
         <div className="modal-row"><span className="modal-label">Horario:</span><span>{time}</span></div>
-        <div className="modal-row"><span className="modal-label">Servicio:</span><span>{appointment.Cut?.name || "—"}</span></div>
+        <div className="modal-row"><span className="modal-label">Servicio:</span><span>{appointment.cut?.name || appointment.Cut?.name || "—"}</span></div>
         <div className="modal-row"><span className="modal-label">Cliente:</span><span>{appointment.client?.name}</span></div>
         <div className="modal-row"><span className="modal-label">Teléfono:</span><span>{appointment.client?.phone}</span></div>
         <button className="modal-close" onClick={onClose}>Cerrar</button>

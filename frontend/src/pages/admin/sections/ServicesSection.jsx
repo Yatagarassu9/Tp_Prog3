@@ -246,7 +246,7 @@ function ServicesSection() {
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingCut(null)}
           confirmLabel="Eliminar"
-          confirmClass="btn-danger"
+          confirmClass="btn btn-danger"
         />
       )}
     </div>

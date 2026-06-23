@@ -14,6 +14,7 @@ import AppointmentEditModal from "../../../components/AppointmentEditModal/Appoi
 import PaginationControls from "../../../components/PaginationControls/PaginationControls";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
 import Toast from "../../../components/Toast/Toast";
+import timeSlots from "../../../data/timeSlots";
 import "../../../styles/appointmentModal.css";
 
 // etiquetas y colores por estado, igual que en las otras páginas
@@ -30,8 +31,8 @@ const STATUS_COLORS = {
   completed: "info",
 };
 
-// form vacío para crear un turno nuevo
-const EMPTY_FORM = { clientId: "", barberId: "", cutId: "", appointmentDate: "" };
+// form vacío para crear un turno nuevo (fecha y horario separados)
+const EMPTY_FORM = { clientId: "", barberId: "", cutId: "", date: "", timeSlotId: "" };
 
 function AppointmentsSection() {
   const [appointments, setAppointments] = useState([]);
@@ -48,6 +49,9 @@ function AppointmentsSection() {
 
   // modal de confirmación para eliminar
   const [deletingId, setDeletingId] = useState(null);
+
+  // buscador de cliente por nombre para filtrar la lista
+  const [clientSearch, setClientSearch] = useState("");
 
   // modal de crear turno
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -116,8 +120,21 @@ function AppointmentsSection() {
   const handleSubmitCreate = (e) => {
     e.preventDefault();
 
-    if (!form.clientId || !form.barberId || !form.cutId || !form.appointmentDate) {
+    if (!form.clientId || !form.barberId || !form.cutId || !form.date || !form.timeSlotId) {
       setFormError("Todos los campos son obligatorios");
+      return;
+    }
+
+    const slot = timeSlots.find((s) => s.id === Number(form.timeSlotId));
+    if (!slot) { setFormError("Horario inválido"); return; }
+
+    const [h, m] = slot.time.split(":");
+    const [yr, mo, dy] = form.date.split("-").map(Number);
+    const combined = new Date(yr, mo - 1, dy);
+    combined.setHours(Number(h), Number(m), 0, 0);
+
+    if (combined <= new Date()) {
+      setFormError("La fecha debe ser futura");
       return;
     }
 
@@ -127,7 +144,7 @@ function AppointmentsSection() {
         clientId: Number(form.clientId),
         barberId: Number(form.barberId),
         cutId: Number(form.cutId),
-        appointmentDate: form.appointmentDate,
+        appointmentDate: combined.toISOString(),
       },
       () => {
         setFormLoading(false);
@@ -167,14 +184,15 @@ function AppointmentsSection() {
     setFilterBranchId("");
   };
 
-  // función para formatear la fecha del turno
+  // función para formatear la fecha del turno en formato 24h
   const formatDate = (dateStr) =>
-    new Date(dateStr).toLocaleDateString("es-AR", {
+    new Date(dateStr).toLocaleString("es-AR", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      hour12: false,
     });
 
   return (
@@ -247,10 +265,22 @@ function AppointmentsSection() {
 
           <button
             className="btn btn-sm btn-outline-secondary"
-            onClick={handleClearFilters}
+            onClick={() => { handleClearFilters(); setClientSearch(""); }}
           >
             Limpiar filtros
           </button>
+        </div>
+
+        {/* buscador por nombre de cliente */}
+        <div className="admin-filter-row mt-2">
+          <input
+            type="text"
+            placeholder="Buscar por nombre de cliente..."
+            value={clientSearch}
+            onChange={(e) => setClientSearch(e.target.value)}
+            className="form-control form-control-sm bg-secondary text-white border-secondary"
+            style={{ maxWidth: "320px" }}
+          />
         </div>
       </div>
 
@@ -272,14 +302,20 @@ function AppointmentsSection() {
                 </tr>
               </thead>
               <tbody>
-                {paginated.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-secondary text-center">
-                      No hay turnos con esos filtros
-                    </td>
-                  </tr>
-                ) : (
-                  paginated.map((appointment) => (
+                {(() => {
+                  const displayList = clientSearch.trim()
+                    ? paginated.filter((a) =>
+                        a.client?.name?.toLowerCase().includes(clientSearch.toLowerCase())
+                      )
+                    : paginated;
+                  if (displayList.length === 0) return (
+                    <tr>
+                      <td colSpan={6} className="text-secondary text-center">
+                        No hay turnos con esos filtros
+                      </td>
+                    </tr>
+                  );
+                  return displayList.map((appointment) => (
                     <tr key={appointment.id}>
                       <td>{formatDate(appointment.appointmentDate)}</td>
                       <td>{appointment.client?.name || "—"}</td>
@@ -385,15 +421,42 @@ function AppointmentsSection() {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
+              <div className="mb-3">
                 <input
-                  type="datetime-local"
-                  name="appointmentDate"
-                  value={form.appointmentDate}
-                  onChange={handleChange}
+                  type="date"
+                  name="date"
+                  value={form.date}
+                  onChange={(e) => {
+                    const d = new Date(e.target.value + "T00:00:00");
+                    const day = d.getDay();
+                    if (day === 0 || day === 1) {
+                      setFormError("La barbería no atiende domingos ni lunes");
+                      return;
+                    }
+                    setFormError("");
+                    handleChange(e);
+                  }}
+                  min={(() => {
+                    const t = new Date();
+                    return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
+                  })()}
                   className="form-control bg-secondary text-white border-secondary"
                   required
                 />
+              </div>
+              <div className="mb-4">
+                <select
+                  name="timeSlotId"
+                  value={form.timeSlotId}
+                  onChange={handleChange}
+                  className="form-select bg-secondary text-white border-secondary"
+                  required
+                >
+                  <option value="">Seleccioná un horario</option>
+                  {timeSlots.map((s) => (
+                    <option key={s.id} value={s.id}>{s.time}</option>
+                  ))}
+                </select>
               </div>
 
               {formError && (
@@ -431,7 +494,7 @@ function AppointmentsSection() {
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingId(null)}
           confirmLabel="Eliminar"
-          confirmClass="btn-danger"
+          confirmClass="btn btn-danger"
         />
       )}
 

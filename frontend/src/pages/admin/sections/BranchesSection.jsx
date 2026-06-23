@@ -8,7 +8,7 @@ import {
 import PaginationControls from "../../../components/PaginationControls/PaginationControls";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
 
-const EMPTY_FORM = { name: "", address: "", phone: "" };
+const EMPTY_FORM = { name: "", address: "", phone: "", imageUrl: "" };
 
 function BranchesSection() {
   const [branches, setBranches] = useState([]);
@@ -40,7 +40,7 @@ function BranchesSection() {
 
   const handleOpenEdit = (branch) => {
     setEditingBranch(branch);
-    setForm({ name: branch.name, address: branch.address, phone: branch.phone || "" });
+    setForm({ name: branch.name, address: branch.address, phone: branch.phone || "", imageUrl: branch.imageUrl || "" });
     setFormError("");
     setShowForm(true);
   };
@@ -202,7 +202,7 @@ function BranchesSection() {
                   required
                 />
               </div>
-              <div className="mb-4">
+              <div className="mb-3">
                 <input
                   type="text"
                   name="phone"
@@ -211,6 +211,24 @@ function BranchesSection() {
                   onChange={handleChange}
                   className="form-control bg-secondary text-white border-secondary"
                 />
+              </div>
+              <div className="mb-4">
+                <input
+                  type="url"
+                  name="imageUrl"
+                  placeholder="URL de imagen (opcional)"
+                  value={form.imageUrl}
+                  onChange={handleChange}
+                  className="form-control bg-secondary text-white border-secondary"
+                />
+                {form.imageUrl && (
+                  <img
+                    src={form.imageUrl}
+                    alt="Preview"
+                    style={{ marginTop: "8px", height: "80px", borderRadius: "6px", objectFit: "cover" }}
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                )}
               </div>
 
               {formError && (
@@ -248,7 +266,7 @@ function BranchesSection() {
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingBranch(null)}
           confirmLabel="Eliminar"
-          confirmClass="btn-danger"
+          confirmClass="btn btn-danger"
         />
       )}
     </div>

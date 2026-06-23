@@ -18,6 +18,7 @@ const EMPTY_FORM = {
   phone: "",
   branchId: "",
   yearsOfExperience: "",
+  imageUrl: "",
 };
 
 function BarbersSection() {
@@ -59,12 +60,12 @@ function BarbersSection() {
 
   const handleOpenEdit = (barber) => {
     setEditingBarber(barber);
-    // llenamos el form con los datos actuales, sin email ni contraseña
     setForm({
       name: barber.name,
       phone: barber.phone || "",
       branchId: barber.branchId || "",
       yearsOfExperience: barber.yearsOfExperience || "",
+      imageUrl: barber.imageUrl || "",
     });
     setFormError("");
     setShowForm(true);
@@ -100,12 +101,12 @@ function BarbersSection() {
     setFormLoading(true);
 
     if (editingBarber) {
-      // al editar mandamos todo menos el email
       const updateData = {
         name: form.name,
         phone: form.phone,
         branchId: form.branchId || null,
         yearsOfExperience: form.yearsOfExperience,
+        imageUrl: form.imageUrl || null,
       };
       updateBarberAdminService(
         editingBarber.id,
@@ -114,8 +115,18 @@ function BarbersSection() {
         (err) => { setFormLoading(false); setFormError(err.message); }
       );
     } else {
-      if (!form.email.trim() || !form.password.trim()) {
-        setFormError("El email y la contraseña son obligatorios al crear");
+      if (!form.email.trim()) {
+        setFormError("El email es obligatorio");
+        setFormLoading(false);
+        return;
+      }
+      if (!form.password.trim()) {
+        setFormError("La contraseña es obligatoria");
+        setFormLoading(false);
+        return;
+      }
+      if (form.password.length < 7) {
+        setFormError("La contraseña debe tener al menos 7 caracteres");
         setFormLoading(false);
         return;
       }
@@ -310,7 +321,7 @@ function BarbersSection() {
                 </select>
               </div>
 
-              <div className="mb-4">
+              <div className="mb-3">
                 <input
                   type="text"
                   name="yearsOfExperience"
@@ -319,6 +330,25 @@ function BarbersSection() {
                   onChange={handleChange}
                   className="form-control bg-secondary text-white border-secondary"
                 />
+              </div>
+
+              <div className="mb-4">
+                <input
+                  type="url"
+                  name="imageUrl"
+                  placeholder="URL de foto del barbero (opcional)"
+                  value={form.imageUrl}
+                  onChange={handleChange}
+                  className="form-control bg-secondary text-white border-secondary"
+                />
+                {form.imageUrl && (
+                  <img
+                    src={form.imageUrl}
+                    alt="Preview"
+                    style={{ marginTop: "8px", height: "80px", width: "80px", borderRadius: "50%", objectFit: "cover" }}
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                )}
               </div>
 
               {formError && (
@@ -356,7 +386,7 @@ function BarbersSection() {
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingBarber(null)}
           confirmLabel="Eliminar"
-          confirmClass="btn-danger"
+          confirmClass="btn btn-danger"
         />
       )}
 

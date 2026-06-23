@@ -114,8 +114,18 @@ function ClientsSection() {
       );
     } else {
       // al crear necesitamos todos los campos obligatorios
-      if (!form.email.trim() || !form.password.trim()) {
-        setFormError("El email y la contraseña son obligatorios al crear");
+      if (!form.email.trim()) {
+        setFormError("El email es obligatorio");
+        setFormLoading(false);
+        return;
+      }
+      if (!form.password.trim()) {
+        setFormError("La contraseña es obligatoria");
+        setFormLoading(false);
+        return;
+      }
+      if (form.password.length < 7) {
+        setFormError("La contraseña debe tener al menos 7 caracteres");
         setFormLoading(false);
         return;
       }
@@ -344,7 +354,7 @@ function ClientsSection() {
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingClient(null)}
           confirmLabel="Eliminar"
-          confirmClass="btn-danger"
+          confirmClass="btn btn-danger"
         />
       )}
 

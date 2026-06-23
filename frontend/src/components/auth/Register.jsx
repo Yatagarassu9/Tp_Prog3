@@ -54,7 +54,12 @@ const Register = ({ onRegister, onCancel }) => {
                 onRegister(data.token);
             },
             (err) => {
-                setServerError(err.message);
+                const msg = err.message?.toLowerCase();
+                if (msg?.includes("validation error") || msg?.includes("unique")) {
+                    setServerError("Email ya registrado");
+                } else {
+                    setServerError(err.message);
+                }
                 setLoading(false);
             }
         );
