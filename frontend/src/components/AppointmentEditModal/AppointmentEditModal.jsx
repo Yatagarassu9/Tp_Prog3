@@ -6,7 +6,15 @@ import { getBookedSlotsService } from "../AppointmentForm/appointment.services";
 function AppointmentEditModal({ appointment, onClose, onSaved }) {
   const existingDate = new Date(appointment.appointmentDate);
 
-  const [newDate, setNewDate] = useState(existingDate.toISOString().slice(0, 10));
+  // fecha local para evitar que el input muestre un día anterior en UTC-3
+  const toLocalDateStr = (d) => {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+
+  const [newDate, setNewDate] = useState(toLocalDateStr(existingDate));
 
   const existingHours = existingDate.getHours().toString().padStart(2, "0");
   const existingMinutes = existingDate.getMinutes().toString().padStart(2, "0");
@@ -18,7 +26,6 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
   const [loading, setLoading] = useState(false);
   const [bookedTimes, setBookedTimes] = useState([]);
 
-  // trae los horarios ocupados cada vez que cambia la fecha
   useEffect(() => {
     if (!newDate || !appointment.barberId) return;
     const day = new Date(newDate + "T00:00:00").getDay();
@@ -55,7 +62,8 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
     }
 
     const [h, m] = slot.time.split(":");
-    const combined = new Date(newDate + "T00:00:00");
+    const [yr, mo, dy] = newDate.split("-").map(Number);
+    const combined = new Date(yr, mo - 1, dy);
     combined.setHours(Number(h), Number(m), 0, 0);
 
     if (combined <= new Date()) {
@@ -95,7 +103,7 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
         </div>
         <div className="modal-row">
           <span className="modal-label">Servicio</span>
-          <span>{appointment.Cut?.name || "—"}</span>
+          <span>{appointment.cut?.name || appointment.Cut?.name || "—"}</span>
         </div>
 
         <div className="modal-row">
@@ -103,7 +111,7 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
           <input
             type="date"
             value={newDate}
-            min={new Date().toISOString().slice(0, 10)}
+            min={toLocalDateStr(new Date())}
             onChange={handleDateChange}
             className="modal-date-input"
           />

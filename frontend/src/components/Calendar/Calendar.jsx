@@ -22,10 +22,8 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
   const [current, setCurrent] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1),
   );
-  //guarda el mes
 
   const [selectedDay, setSelectedDay] = useState(null);
-  //guarda el dia
 
   const prevMonth = () => {
     setCurrent(new Date(current.getFullYear(), current.getMonth() - 1, 1));
@@ -77,7 +75,6 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
         className="text-center fw-bold d-grid"
         style={{ gridTemplateColumns: "repeat(7, 1fr)" }}
       >
-        {/* divide el contenedor en 7 columnas de igual tamaño. 1fr es fraccion del espacio disponible */}
         {["Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"].map((day) => (
           <div className="text-warning text-center fw-bold" key={day}>
             {day}
@@ -90,11 +87,8 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
 
         {[...Array(lastDay.getDate())].map((_, i) => {
           const day = i + 1;
-
           const date = new Date(year, month, day);
-
           const disabled = date < today || date.getDay() === 0 || date.getDay() === 1;
-
           const selected = selectedDay?.toDateString() === date.toDateString();
 
           return (

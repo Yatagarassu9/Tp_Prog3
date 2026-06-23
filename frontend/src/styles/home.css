@@ -310,6 +310,83 @@
   z-index: 1;
 }
 
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .branches-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .branch-card-img {
+    height: 380px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 100px 16px 60px;
+  }
+
+  .hero-logo {
+    height: 160px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .hero-cta {
+    padding: 24px 20px;
+    margin-top: 32px;
+  }
+
+  .hero-cta-title {
+    font-size: 1.4rem;
+  }
+
+  .branches {
+    padding: 60px 16px;
+  }
+
+  .branches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .branch-card-img {
+    height: 260px !important;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+    margin-bottom: 28px;
+  }
+
+  .stats {
+    flex-direction: column;
+    padding: 40px 16px;
+    gap: 12px;
+  }
+
+  .stat-item {
+    padding: 20px 24px;
+  }
+
+  .history {
+    padding: 60px 16px;
+  }
+
+  .history-content {
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .history-img {
+    width: 100%;
+  }
+}
+
 /*
 REFERENCIAS:
 min-height: 100vh      - altura mínima igual a toda la pantalla

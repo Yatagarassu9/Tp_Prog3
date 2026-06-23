@@ -8,6 +8,7 @@ import {
 import { getAllBranchesAdminService } from "../../../services/admin.services";
 import PaginationControls from "../../../components/PaginationControls/PaginationControls";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
+import Toast from "../../../components/Toast/Toast";
 
 const EMPTY_FORM = {
   name: "",
@@ -25,6 +26,7 @@ function BarbersSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -35,6 +37,8 @@ function BarbersSection() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => setToast({ message, type });
 
   useEffect(() => {
     loadBarbers();
@@ -106,7 +110,6 @@ function BarbersSection() {
     setFormLoading(true);
 
     if (editingBarber) {
-      // al editar mandamos todo menos el email
       const updateData = {
         name: form.name,
         phone: form.phone,
@@ -117,18 +120,28 @@ function BarbersSection() {
       updateBarberAdminService(
         editingBarber.id,
         updateData,
-        () => { setFormLoading(false); handleCloseForm(); loadBarbers(); },
+        () => { setFormLoading(false); handleCloseForm(); loadBarbers(); showToast("Barbero actualizado correctamente"); },
         (err) => { setFormLoading(false); setFormError(err.message); }
       );
     } else {
-      if (!form.email.trim() || !form.password.trim()) {
-        setFormError("El email y la contraseña son obligatorios al crear");
+      if (!form.email.trim()) {
+        setFormError("El email es obligatorio");
+        setFormLoading(false);
+        return;
+      }
+      if (!form.password.trim()) {
+        setFormError("La contraseña es obligatoria");
+        setFormLoading(false);
+        return;
+      }
+      if (form.password.length < 7) {
+        setFormError("La contraseña debe tener al menos 7 caracteres");
         setFormLoading(false);
         return;
       }
       createBarberAdminService(
         { ...form, branchId: form.branchId || null },
-        () => { setFormLoading(false); handleCloseForm(); loadBarbers(); },
+        () => { setFormLoading(false); handleCloseForm(); loadBarbers(); showToast("Barbero creado correctamente"); },
         (err) => { setFormLoading(false); setFormError(err.message); }
       );
     }
@@ -138,8 +151,8 @@ function BarbersSection() {
     if (!deletingBarber) return;
     deleteBarberAdminService(
       deletingBarber.id,
-      () => { setDeletingBarber(null); loadBarbers(); },
-      () => setDeletingBarber(null)
+      () => { setDeletingBarber(null); loadBarbers(); showToast("Barbero eliminado correctamente"); },
+      () => { setDeletingBarber(null); showToast("No se pudo eliminar el barbero", "danger"); }
     );
   };
 
@@ -149,8 +162,16 @@ function BarbersSection() {
     return found ? found.name : "—";
   };
 
-  const totalPages = Math.ceil(barbers.length / pageSize);
-  const paginated = barbers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const filteredBarbers = search.trim()
+    ? barbers.filter(
+        (b) =>
+          b.name.toLowerCase().includes(search.toLowerCase()) ||
+          b.email.toLowerCase().includes(search.toLowerCase()),
+      )
+    : barbers;
+
+  const totalPages = Math.ceil(filteredBarbers.length / pageSize);
+  const paginated = filteredBarbers.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="admin-section">
@@ -166,6 +187,13 @@ function BarbersSection() {
 
       {!loading && !error && (
         <>
+          <input
+            type="text"
+            placeholder="Buscar por nombre o email..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+            className="form-control bg-secondary text-white border-secondary mb-3"
+          />
           <div className="table-responsive">
             <table className="admin-table">
               <thead>
@@ -222,7 +250,7 @@ function BarbersSection() {
             pageSize={pageSize}
             onPageChange={setCurrentPage}
             onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
-            total={barbers.length}
+            total={filteredBarbers.length}
           />
         </>
       )}
@@ -314,6 +342,7 @@ function BarbersSection() {
               </div>
 
               <div className="mb-4">
+
                 <label className="text-secondary d-block mb-1" style={{ fontSize: "13px" }}>
                   Foto del barbero (opcional)
                 </label>
@@ -321,6 +350,7 @@ function BarbersSection() {
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
+
                   className="form-control bg-secondary text-white border-secondary"
                 />
                 {form.imageUrl && (
@@ -367,7 +397,15 @@ function BarbersSection() {
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingBarber(null)}
           confirmLabel="Eliminar"
-          confirmClass="btn-danger"
+          confirmClass="btn btn-danger"
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>

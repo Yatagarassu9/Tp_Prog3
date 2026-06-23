@@ -7,6 +7,7 @@ import {
 } from "../../../services/admin.services";
 import PaginationControls from "../../../components/PaginationControls/PaginationControls";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
+import Toast from "../../../components/Toast/Toast";
 
 // estado vacío para el formulario, lo reutilizamos al abrir y cerrar el modal
 const EMPTY_FORM = { name: "", email: "", password: "", phone: "" };
@@ -15,6 +16,8 @@ function ClientsSection() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [search, setSearch] = useState("");
 
   // estado del paginado
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +32,8 @@ function ClientsSection() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = "success") => setToast({ message, type });
 
   // cargamos los clientes al montar la sección
   useEffect(() => {
@@ -100,6 +105,7 @@ function ClientsSection() {
           setFormLoading(false);
           handleCloseForm();
           loadClients();
+          showToast("Cliente actualizado correctamente");
         },
         (err) => {
           setFormLoading(false);
@@ -108,8 +114,18 @@ function ClientsSection() {
       );
     } else {
       // al crear necesitamos todos los campos obligatorios
-      if (!form.email.trim() || !form.password.trim()) {
-        setFormError("El email y la contraseña son obligatorios al crear");
+      if (!form.email.trim()) {
+        setFormError("El email es obligatorio");
+        setFormLoading(false);
+        return;
+      }
+      if (!form.password.trim()) {
+        setFormError("La contraseña es obligatoria");
+        setFormLoading(false);
+        return;
+      }
+      if (form.password.length < 7) {
+        setFormError("La contraseña debe tener al menos 7 caracteres");
         setFormLoading(false);
         return;
       }
@@ -119,6 +135,7 @@ function ClientsSection() {
           setFormLoading(false);
           handleCloseForm();
           loadClients();
+          showToast("Cliente creado correctamente");
         },
         (err) => {
           setFormLoading(false);
@@ -136,14 +153,25 @@ function ClientsSection() {
       () => {
         setDeletingClient(null);
         loadClients();
+        showToast("Cliente eliminado correctamente");
       },
-      () => setDeletingClient(null)
+      () => {
+        setDeletingClient(null);
+        showToast("No se pudo eliminar el cliente", "danger");
+      }
     );
   };
 
-  // calculamos qué clientes mostrar en la página actual
-  const totalPages = Math.ceil(clients.length / pageSize);
-  const paginated = clients.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const filtered = search.trim()
+    ? clients.filter(
+        (c) =>
+          c.name.toLowerCase().includes(search.toLowerCase()) ||
+          c.email.toLowerCase().includes(search.toLowerCase()),
+      )
+    : clients;
+
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div className="admin-section">
@@ -159,6 +187,13 @@ function ClientsSection() {
 
       {!loading && !error && (
         <>
+          <input
+            type="text"
+            placeholder="Buscar por nombre o email..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+            className="form-control bg-secondary text-white border-secondary mb-3"
+          />
           <div className="table-responsive">
             <table className="admin-table">
               <thead>
@@ -166,13 +201,14 @@ function ClientsSection() {
                   <th>Nombre</th>
                   <th>Email</th>
                   <th>Teléfono</th>
+                  <th>Rol</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {paginated.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="text-secondary text-center">
+                    <td colSpan={5} className="text-secondary text-center">
                       No hay clientes registrados
                     </td>
                   </tr>
@@ -182,6 +218,11 @@ function ClientsSection() {
                       <td>{client.name}</td>
                       <td>{client.email}</td>
                       <td>{client.phone || "—"}</td>
+                      <td>
+                        <span className={`badge bg-${client.role === "admin" || client.role === "superadmin" ? "warning text-dark" : "secondary"}`}>
+                          {client.role}
+                        </span>
+                      </td>
                       <td>
                         <div className="admin-row-actions">
                           <button
@@ -211,7 +252,7 @@ function ClientsSection() {
             pageSize={pageSize}
             onPageChange={setCurrentPage}
             onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
-            total={clients.length}
+            total={filtered.length}
           />
         </>
       )}
@@ -313,7 +354,15 @@ function ClientsSection() {
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingClient(null)}
           confirmLabel="Eliminar"
-          confirmClass="btn-danger"
+          confirmClass="btn btn-danger"
+        />
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </div>

@@ -222,6 +222,24 @@ function BranchesSection() {
                   className="form-control bg-secondary text-white border-secondary"
                 />
               </div>
+              <div className="mb-4">
+                <input
+                  type="url"
+                  name="imageUrl"
+                  placeholder="URL de imagen (opcional)"
+                  value={form.imageUrl}
+                  onChange={handleChange}
+                  className="form-control bg-secondary text-white border-secondary"
+                />
+                {form.imageUrl && (
+                  <img
+                    src={form.imageUrl}
+                    alt="Preview"
+                    style={{ marginTop: "8px", height: "80px", borderRadius: "6px", objectFit: "cover" }}
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                )}
+              </div>
 
               <div className="mb-4">
                 <label className="text-secondary d-block mb-1" style={{ fontSize: "13px" }}>
@@ -277,7 +295,7 @@ function BranchesSection() {
           onConfirm={handleConfirmDelete}
           onCancel={() => setDeletingBranch(null)}
           confirmLabel="Eliminar"
-          confirmClass="btn-danger"
+          confirmClass="btn btn-danger"
         />
       )}
     </div>

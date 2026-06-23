@@ -6,11 +6,11 @@ import { getAllUsersService } from "../../services/admin.services";
 import { getAllBranchesAdminService } from "../../services/admin.services";
 import "../../styles/adminDashboard.css";
 
+// pagina de inicio del admin con estadisticas generales del negocio
 function AdminDashboardPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // acá guardamos los datos que traemos del backend
   const [appointments, setAppointments] = useState([]);
   const [users, setUsers] = useState([]);
   const [branches, setBranches] = useState([]);
@@ -21,7 +21,7 @@ function AdminDashboardPage() {
   }, []);
 
   // cargamos los tres recursos en paralelo al montar el componente
-  // usamos un contador para saber cuando terminaron los tres fetches
+  // usamos un contador para saber cuando terminaron los tres fetches y recien ahi sacamos el loading
   useEffect(() => {
     let pendingRequests = 3;
 
@@ -48,22 +48,42 @@ function AdminDashboardPage() {
 
   // ===== CÁLCULO DE STATS =====
 
-  // contamos los turnos por estado
-  const pending = appointments.filter((a) => a.status === "pending").length;
-  const completed = appointments.filter((a) => a.status === "completed").length;
-  const cancelled = appointments.filter((a) => a.status === "cancelled").length;
+  // filtro de mes unificado para todas las estadísticas, formato YYYY-MM
+  const [statsMonth, setStatsMonth] = useState("");
 
-  // sumamos el precio del corte de cada turno completado para saber lo facturado
-  const totalRevenue = appointments
+  // función helper: devuelve el mes en formato YYYY-MM de una fecha
+  const getMonth = (dateStr) => {
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
+
+  // filtramos los turnos según el mes seleccionado
+  const filteredAppointments = statsMonth
+    ? appointments.filter((a) => getMonth(a.appointmentDate) === statsMonth)
+    : appointments;
+
+  // contamos los turnos por estado (con el filtro aplicado)
+  const pending = filteredAppointments.filter((a) => a.status === "pending").length;
+  const completed = filteredAppointments.filter((a) => a.status === "completed").length;
+  const cancelled = filteredAppointments.filter((a) => a.status === "cancelled").length;
+
+  // sacamos los meses unicos que tienen turnos para el selector de filtro
+  const availableMonths = [
+    ...new Set(
+      appointments.map((a) => getMonth(a.appointmentDate))
+    ),
+  ].sort().reverse();
+
+  // sumamos el precio de cada turno completado para calcular lo facturado
+  const totalRevenue = filteredAppointments
     .filter((a) => a.status === "completed" && a.cut?.price)
     .reduce((sum, a) => sum + Number(a.cut.price), 0);
 
-  // contamos solo los usuarios con rol client
+  // solo contamos los usuarios con rol "client", los admin no se incluyen
   const totalClients = users.filter((u) => u.role === "client").length;
 
-  // para el servicio más pedido contamos cuántas veces aparece cada corte en los turnos
-  // usamos un objeto como acumulador y después buscamos el que tenga el número más alto
-  const cutCounts = appointments.reduce((acc, a) => {
+  // para el servicio mas pedido contamos cuantas veces aparece cada nombre de corte
+  const cutCounts = filteredAppointments.reduce((acc, a) => {
     const cutName = a.cut?.name;
     if (!cutName) return acc;
     acc[cutName] = (acc[cutName] || 0) + 1;
@@ -73,29 +93,27 @@ function AdminDashboardPage() {
     ? Object.keys(cutCounts).reduce((a, b) => (cutCounts[a] > cutCounts[b] ? a : b))
     : null;
 
-  // para los turnos completados por sucursal necesitamos saber a qué sucursal pertenece cada barbero
-  // el turno trae el objeto barber que tiene el branchId, cruzamos con el array de branches
+  // cruzamos los turnos completados con las sucursales para saber cuantos atendio cada una
   const appointmentsByBranch = branches.map((branch) => {
-    const count = appointments.filter(
+    const count = filteredAppointments.filter(
       (a) => a.status === "completed" && a.barber?.branchId === branch.id
     ).length;
     return { name: branch.name, count };
   });
 
-  // misma idea pero agrupado por barbero
-  // primero sacamos los barberos únicos que aparecen en los turnos
+  // agrupamos los turnos completados por barbero para el ranking
   const barberMap = {};
-  appointments.forEach((a) => {
+  filteredAppointments.forEach((a) => {
     if (a.barber) {
       barberMap[a.barber.id] = a.barber.name;
     }
   });
   const appointmentsByBarber = Object.entries(barberMap).map(([id, name]) => {
-    const count = appointments.filter(
+    const count = filteredAppointments.filter(
       (a) => a.status === "completed" && a.barber?.id === Number(id)
     ).length;
     return { name, count };
-  }).sort((a, b) => b.count - a.count); // ordenamos de más a menos
+  }).sort((a, b) => b.count - a.count); // ordenamos de mas a menos turnos completados
 
   if (!user) {
     return (
@@ -116,7 +134,23 @@ function AdminDashboardPage() {
         <p className="text-secondary text-center mt-5">Cargando estadísticas...</p>
       ) : (
         <>
-          {/* fila principal de tarjetas con los números más importantes */}
+          {/* filtro de mes unificado para todas las estadísticas */}
+          <div className="d-flex align-items-center gap-3 mb-4">
+            <span className="text-secondary" style={{ fontSize: "14px" }}>Filtrar por mes:</span>
+            <select
+              value={statsMonth}
+              onChange={(e) => setStatsMonth(e.target.value)}
+              className="form-select form-select-sm bg-secondary text-white border-secondary"
+              style={{ maxWidth: "180px" }}
+            >
+              <option value="">Todos los meses</option>
+              {availableMonths.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* primera fila: numeros mas importantes */}
           <section className="admin-stats-grid">
             <div className="admin-stat-card">
               <span className="admin-stat-value text-warning">{pending}</span>
@@ -136,7 +170,7 @@ function AdminDashboardPage() {
             </div>
           </section>
 
-          {/* segunda fila con el monto facturado y el servicio más pedido */}
+          {/* segunda fila: monto facturado con filtro por mes, y servicio mas pedido */}
           <section className="admin-stats-grid admin-stats-grid-2">
             <div className="admin-stat-card admin-stat-card-wide">
               <span className="admin-stat-value text-warning">
@@ -203,7 +237,7 @@ function AdminDashboardPage() {
             </div>
           </section>
 
-          {/* accesos rápidos para ir a cada sección de gestión */}
+          {/* botones rapidos para ir a cada seccion de gestion */}
           <section className="admin-quick-access">
             <h2 className="admin-section-title">Gestión rápida</h2>
             <p className="text-secondary mb-4" style={{ fontSize: "14px" }}>

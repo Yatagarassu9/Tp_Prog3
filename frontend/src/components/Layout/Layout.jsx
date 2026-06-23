@@ -9,10 +9,9 @@ function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const showFab =
-    !location.pathname.startsWith("/barber") &&
+    user?.role !== "admin" &&
+    user?.role !== "barber" &&
     location.pathname !== "/appointment";
-  // oculta el boton flotante en rutas del barbero y en la pagina de sacar turno
-  // el startswith hace que las rutas que empiezan con /barber, no tengan el boton flotante
 
   return (
     <div className="layout page-transition">
@@ -20,7 +19,7 @@ function Layout() {
       <main className="layout-main">
         <Outlet />
       </main>
-      {user?.role !== "barber" && <Footer />}
+      {user?.role !== "barber" && user?.role !== "admin" && <Footer />}
       {showFab && (
         <button
           className="fab-appointment"

@@ -56,3 +56,28 @@
   transform: rotate(-20deg);
   transition: transform 0.3s ease;
 }
+
+@media (max-width: 768px) {
+  .fab-appointment {
+    bottom: 1.5rem;
+    right: 1.25rem;
+    width: auto;
+    height: 50px;
+    border-radius: 25px;
+    padding: 0 20px;
+    font-size: 1.3rem;
+    gap: 8px;
+  }
+
+  .fab-label {
+    opacity: 1;
+    transform: translateX(0);
+    transition: none;
+    pointer-events: auto;
+    font-size: 0.9rem;
+  }
+
+  .fab-appointment:hover {
+    width: auto;
+  }
+}

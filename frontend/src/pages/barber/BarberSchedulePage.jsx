@@ -180,10 +180,11 @@ function BarberSchedulePage() {
         ) : (
           paginated.map((appointment) => {
             const isPassedAppointment = isPast(appointment.appointmentDate);
+            const isCancelled = appointment.status === "cancelled";
             return (
               <div
                 key={appointment.id}
-                className={`agenda-row ${isPassedAppointment ? "agenda-row-past" : ""}`}
+                className={`agenda-row ${isPassedAppointment || isCancelled ? "agenda-row-past" : ""}`}
               >
                 <span className="agenda-time">
                   {formatTime(appointment.appointmentDate)}
@@ -200,11 +201,17 @@ function BarberSchedulePage() {
                   {appointment.client?.name}
                 </span>
 
-                <span className="agenda-service">{appointment.Cut?.name}</span>
+                <span className="agenda-service">
+                  {appointment.cut?.name || appointment.Cut?.name || "—"}
+                </span>
 
                 <div className="agenda-actions">
-                  {/* solo mostramos los botones si el turno no pasó y no está cancelado */}
-                  {!isPassedAppointment && appointment.status !== "cancelled" && (
+                  {/* badge de cancelado al final de la fila */}
+                  {isCancelled && (
+                    <span className="badge bg-danger ms-auto">CANCELADO</span>
+                  )}
+                  {/* botones solo si el turno no pasó y no está cancelado */}
+                  {!isPassedAppointment && !isCancelled && (
                     <>
                       <button
                         className="btn-agenda-edit"
