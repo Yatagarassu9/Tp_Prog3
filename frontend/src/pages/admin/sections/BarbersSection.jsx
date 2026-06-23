@@ -9,7 +9,6 @@ import { getAllBranchesAdminService } from "../../../services/admin.services";
 import PaginationControls from "../../../components/PaginationControls/PaginationControls";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
 
-// form vacío para crear un barbero nuevo
 const EMPTY_FORM = {
   name: "",
   email: "",
@@ -17,6 +16,7 @@ const EMPTY_FORM = {
   phone: "",
   branchId: "",
   yearsOfExperience: "",
+  imageUrl: "",
 };
 
 function BarbersSection() {
@@ -55,12 +55,12 @@ function BarbersSection() {
 
   const handleOpenEdit = (barber) => {
     setEditingBarber(barber);
-    // llenamos el form con los datos actuales, sin email ni contraseña
     setForm({
       name: barber.name,
       phone: barber.phone || "",
       branchId: barber.branchId || "",
       yearsOfExperience: barber.yearsOfExperience || "",
+      imageUrl: barber.imageUrl || "",
     });
     setFormError("");
     setShowForm(true);
@@ -85,6 +85,16 @@ function BarbersSection() {
     setFormError("");
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm((prev) => ({ ...prev, imageUrl: reader.result }));
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -102,6 +112,7 @@ function BarbersSection() {
         phone: form.phone,
         branchId: form.branchId || null,
         yearsOfExperience: form.yearsOfExperience,
+        imageUrl: form.imageUrl || null,
       };
       updateBarberAdminService(
         editingBarber.id,
@@ -291,7 +302,7 @@ function BarbersSection() {
                 </select>
               </div>
 
-              <div className="mb-4">
+              <div className="mb-3">
                 <input
                   type="text"
                   name="yearsOfExperience"
@@ -300,6 +311,25 @@ function BarbersSection() {
                   onChange={handleChange}
                   className="form-control bg-secondary text-white border-secondary"
                 />
+              </div>
+
+              <div className="mb-4">
+                <label className="text-secondary d-block mb-1" style={{ fontSize: "13px" }}>
+                  Foto del barbero (opcional)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="form-control bg-secondary text-white border-secondary"
+                />
+                {form.imageUrl && (
+                  <img
+                    src={form.imageUrl}
+                    alt="preview"
+                    style={{ width: "72px", height: "72px", objectFit: "cover", borderRadius: "50%", marginTop: "8px", border: "2px solid #ffc107" }}
+                  />
+                )}
               </div>
 
               {formError && (

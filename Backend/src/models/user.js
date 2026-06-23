@@ -24,7 +24,7 @@ const User = sequelize.define("User", {
   },
   // datos del barbero
   imageUrl: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
   },
   branchId: {

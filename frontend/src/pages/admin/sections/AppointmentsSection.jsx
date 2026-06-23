@@ -327,7 +327,7 @@ function AppointmentsSection() {
       {editingAppointment && (
         <AppointmentEditModal
           appointment={editingAppointment}
-          onSuccess={handleEditSuccess}
+          onSaved={handleEditSuccess}
           onClose={() => setEditingAppointment(null)}
         />
       )}

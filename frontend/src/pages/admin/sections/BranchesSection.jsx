@@ -8,7 +8,7 @@ import {
 import PaginationControls from "../../../components/PaginationControls/PaginationControls";
 import ConfirmModal from "../../../components/ConfirmModal/ConfirmModal";
 
-const EMPTY_FORM = { name: "", address: "", phone: "" };
+const EMPTY_FORM = { name: "", address: "", phone: "", imageUrl: "" };
 
 function BranchesSection() {
   const [branches, setBranches] = useState([]);
@@ -40,7 +40,7 @@ function BranchesSection() {
 
   const handleOpenEdit = (branch) => {
     setEditingBranch(branch);
-    setForm({ name: branch.name, address: branch.address, phone: branch.phone || "" });
+    setForm({ name: branch.name, address: branch.address, phone: branch.phone || "", imageUrl: branch.imageUrl || "" });
     setFormError("");
     setShowForm(true);
   };
@@ -62,6 +62,16 @@ function BranchesSection() {
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     setFormError("");
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm((prev) => ({ ...prev, imageUrl: reader.result }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e) => {
@@ -202,7 +212,7 @@ function BranchesSection() {
                   required
                 />
               </div>
-              <div className="mb-4">
+              <div className="mb-3">
                 <input
                   type="text"
                   name="phone"
@@ -211,6 +221,25 @@ function BranchesSection() {
                   onChange={handleChange}
                   className="form-control bg-secondary text-white border-secondary"
                 />
+              </div>
+
+              <div className="mb-4">
+                <label className="text-secondary d-block mb-1" style={{ fontSize: "13px" }}>
+                  Foto de la sucursal (opcional)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="form-control bg-secondary text-white border-secondary"
+                />
+                {form.imageUrl && (
+                  <img
+                    src={form.imageUrl}
+                    alt="preview"
+                    style={{ width: "100%", maxHeight: "120px", objectFit: "cover", borderRadius: "6px", marginTop: "8px", border: "2px solid #ffc107" }}
+                  />
+                )}
               </div>
 
               {formError && (

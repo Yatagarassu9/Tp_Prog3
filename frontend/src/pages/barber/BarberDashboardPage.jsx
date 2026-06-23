@@ -26,9 +26,9 @@ function BarberDashboardPage() {
   const today = now.toDateString(); // convierte la fecha en String sin hora, asi puedo comparar solo el día sin la hora
 
   const todayAppointments = appointments.filter(
-    // filtro solamente los de ese dia
     (appointment) =>
-      new Date(appointment.appointmentDate).toDateString() === today,
+      new Date(appointment.appointmentDate).toDateString() === today &&
+      appointment.status !== "cancelled",
   );
 
   // comparo con el status de los turnos
@@ -55,6 +55,15 @@ function BarberDashboardPage() {
   const minutesUntilNext = nextAppointment
     ? Math.round((new Date(nextAppointment.appointmentDate) - now) / 60000)
     : null;
+
+  const formatTimeUntil = (minutes) => {
+    if (minutes <= 0) return "ahora";
+    if (minutes < 60) return `En ${minutes} min`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `En ${hours} h`;
+    const days = Math.round(hours / 24);
+    return `En ${days} día${days !== 1 ? "s" : ""}`;
+  };
 
   const futureDays = [
     // Set elimina fechas duplicadas (si hay 2 turnos el mismo día, aparece una sola vez)
@@ -140,7 +149,7 @@ function BarberDashboardPage() {
               </span>
               <span className="next-service">{nextAppointment.Cut?.name}</span>
             </div>
-            <div className="next-badge">En {minutesUntilNext} min</div>
+            <div className="next-badge">{formatTimeUntil(minutesUntilNext)}</div>
           </div>
         ) : (
           <p className="no-appointments">No hay turnos próximos.</p>

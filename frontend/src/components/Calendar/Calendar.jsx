@@ -93,7 +93,7 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
 
           const date = new Date(year, month, day);
 
-          const disabled = date < today || date.getDay() === 0;
+          const disabled = date < today || date.getDay() === 0 || date.getDay() === 1;
 
           const selected = selectedDay?.toDateString() === date.toDateString();
 
