@@ -9,10 +9,16 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
   // cargamos la fecha actual del turno para mostrarsela al usuario
   const existingDate = new Date(appointment.appointmentDate);
 
-  // convertimos la fecha a formato YYYY-MM-DD que es lo que pide el input type="date"
-  const [newDate, setNewDate] = useState(
-    existingDate.toISOString().slice(0, 10),
-  );
+  // usamos fecha local (no UTC) para que el input date muestre el dia correcto
+  // toISOString() devuelve UTC y puede mostrar un dia anterior en zonas UTC-
+  const localDateStr = (() => {
+    const y = existingDate.getFullYear();
+    const m = String(existingDate.getMonth() + 1).padStart(2, "0");
+    const d = String(existingDate.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  })();
+
+  const [newDate, setNewDate] = useState(localDateStr);
 
   // buscamos el slot que coincide con la hora actual del turno para pre-seleccionarlo en el dropdown
   const existingHours = existingDate.getHours().toString().padStart(2, "0");
@@ -40,8 +46,10 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
     if (!slot) return;
 
     // combinamos la fecha elegida con la hora del slot para armar el Date completo
+    // parseamos la fecha como local (no UTC) para evitar que setHours cambie el dia
     const [h, m] = slot.time.split(":");
-    const combined = new Date(newDate);
+    const [yr, mo, dy] = newDate.split("-").map(Number);
+    const combined = new Date(yr, mo - 1, dy);
     combined.setHours(Number(h), Number(m), 0, 0);
 
     // no dejamos modificar a una fecha que ya paso
@@ -93,7 +101,10 @@ function AppointmentEditModal({ appointment, onClose, onSaved }) {
           <input
             type="date"
             value={newDate}
-            min={new Date().toISOString().slice(0, 10)}
+            min={(() => {
+              const t = new Date();
+              return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}-${String(t.getDate()).padStart(2,"0")}`;
+            })()}
             onChange={(e) => setNewDate(e.target.value)}
             className="modal-date-input"
           />

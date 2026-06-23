@@ -71,6 +71,7 @@ function Navbar() {
         {/* Se ve si el usuario logueado es barbero */}
         {user?.role === "barber" && (
           <>
+            <span className="navbar-panel-label">Panel de barbero</span>
             <Link to="/barber" className={isActive("/barber")}>
               Inicio
             </Link>
@@ -97,11 +98,24 @@ function Navbar() {
 
         {/* Sección de autenticación, cambia segun quien sea */}
         {user?.role === "barber" ? (
-          <div className="navbar-barber-session">
-            <span className="navbar-barber-name">{user.name}</span>
-            <button className="navbar-barber-logout" onClick={handleLogout}>
-              Cerrar sesión
+          <div className="navbar-account" ref={dropdownRef}>
+            <button
+              className="navbar-account-btn"
+              onClick={() => setDropdownOpen((v) => !v)}
+            >
+              {user.name}{" "}
+              <span className="navbar-chevron">{dropdownOpen ? "▴" : "▾"}</span>
             </button>
+            {dropdownOpen && (
+              <div className="navbar-dropdown">
+                <Link to="/my-account/change-password" onClick={closeAll}>
+                  Cambiar contraseña
+                </Link>
+                <button className="navbar-dropdown-logout" onClick={handleLogout}>
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
           </div>
         ) : user?.role === "admin" ? (
           // dropdown de mi cuenta para el admin
@@ -133,15 +147,17 @@ function Navbar() {
               className="navbar-account-btn"
               onClick={() => setDropdownOpen((v) => !v)}
             >
-              Mi Cuenta{" "}
+              Hola, {user.name}{" "}
               <span className="navbar-chevron">{dropdownOpen ? "▴" : "▾"}</span>
             </button>
-            {dropdownOpen && ( // si dropdownOpen = true, despliega el menu
+            {dropdownOpen && (
               <div className="navbar-dropdown">
                 <Link to="/my-account/appointments" onClick={closeAll}>
                   Mis turnos
                 </Link>
-
+                <Link to="/my-account/change-password" onClick={closeAll}>
+                  Cambiar contraseña
+                </Link>
                 <button
                   className="navbar-dropdown-logout"
                   onClick={handleLogout}

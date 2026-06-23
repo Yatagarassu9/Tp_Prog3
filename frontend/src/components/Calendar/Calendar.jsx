@@ -120,7 +120,7 @@ function Calendar({ selectedBranch, selectedBarber, onSelectDay }) {
                   ? "btn btn-warning text-dark fw-bold w-100 p-2"
                   : disabled
                   ? "btn btn-dark text-secondary w-100 p-2"
-                  : "btn btn-outline-warning text-warning w-100 p-2"
+                  : "btn btn-outline-warning w-100 p-2"
               }
               key={day}
               disabled={disabled}

@@ -19,7 +19,7 @@ function Layout() {
       <main className="layout-main">
         <Outlet />
       </main>
-      {user?.role !== "barber" && <Footer />}
+      {user?.role !== "barber" && user?.role !== "admin" && <Footer />}
       {showFab && (
         <button
           className="fab-appointment"

@@ -48,44 +48,42 @@ function AdminDashboardPage() {
 
   // ===== CÁLCULO DE STATS =====
 
-  // filtro de mes para el total facturado, formato YYYY-MM
-  const [revenueMonth, setRevenueMonth] = useState("");
+  // filtro de mes unificado para todas las estadísticas, formato YYYY-MM
+  const [statsMonth, setStatsMonth] = useState("");
 
-  // contamos los turnos por estado para las tarjetas superiores
-  const pending = appointments.filter((a) => a.status === "pending").length;
-  const completed = appointments.filter((a) => a.status === "completed").length;
-  const cancelled = appointments.filter((a) => a.status === "cancelled").length;
+  // función helper: devuelve el mes en formato YYYY-MM de una fecha
+  const getMonth = (dateStr) => {
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  };
 
-  // sacamos los meses unicos que tienen turnos completados para el selector de filtro
+  // filtramos los turnos según el mes seleccionado
+  const filteredAppointments = statsMonth
+    ? appointments.filter((a) => getMonth(a.appointmentDate) === statsMonth)
+    : appointments;
+
+  // contamos los turnos por estado (con el filtro aplicado)
+  const pending = filteredAppointments.filter((a) => a.status === "pending").length;
+  const completed = filteredAppointments.filter((a) => a.status === "completed").length;
+  const cancelled = filteredAppointments.filter((a) => a.status === "cancelled").length;
+
+  // sacamos los meses unicos que tienen turnos para el selector de filtro
   const availableMonths = [
     ...new Set(
-      appointments
-        .filter((a) => a.status === "completed")
-        .map((a) => {
-          const d = new Date(a.appointmentDate);
-          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-        })
+      appointments.map((a) => getMonth(a.appointmentDate))
     ),
-  ].sort().reverse(); // ordenamos del mas reciente al mas viejo
+  ].sort().reverse();
 
   // sumamos el precio de cada turno completado para calcular lo facturado
-  // si hay un mes seleccionado filtramos solo ese mes
-  const totalRevenue = appointments
-    .filter((a) => {
-      if (a.status !== "completed" || !a.cut?.price) return false;
-      if (!revenueMonth) return true;
-      const d = new Date(a.appointmentDate);
-      const m = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      return m === revenueMonth;
-    })
+  const totalRevenue = filteredAppointments
+    .filter((a) => a.status === "completed" && a.cut?.price)
     .reduce((sum, a) => sum + Number(a.cut.price), 0);
 
   // solo contamos los usuarios con rol "client", los admin no se incluyen
   const totalClients = users.filter((u) => u.role === "client").length;
 
   // para el servicio mas pedido contamos cuantas veces aparece cada nombre de corte
-  // reducimos a un objeto {nombre: cantidad} y despues buscamos el mayor
-  const cutCounts = appointments.reduce((acc, a) => {
+  const cutCounts = filteredAppointments.reduce((acc, a) => {
     const cutName = a.cut?.name;
     if (!cutName) return acc;
     acc[cutName] = (acc[cutName] || 0) + 1;
@@ -96,24 +94,22 @@ function AdminDashboardPage() {
     : null;
 
   // cruzamos los turnos completados con las sucursales para saber cuantos atendio cada una
-  // el turno trae el objeto barber que tiene branchId, lo usamos para cruzar
   const appointmentsByBranch = branches.map((branch) => {
-    const count = appointments.filter(
+    const count = filteredAppointments.filter(
       (a) => a.status === "completed" && a.barber?.branchId === branch.id
     ).length;
     return { name: branch.name, count };
   });
 
   // agrupamos los turnos completados por barbero para el ranking
-  // primero sacamos los barberos unicos que aparecen en los turnos
   const barberMap = {};
-  appointments.forEach((a) => {
+  filteredAppointments.forEach((a) => {
     if (a.barber) {
       barberMap[a.barber.id] = a.barber.name;
     }
   });
   const appointmentsByBarber = Object.entries(barberMap).map(([id, name]) => {
-    const count = appointments.filter(
+    const count = filteredAppointments.filter(
       (a) => a.status === "completed" && a.barber?.id === Number(id)
     ).length;
     return { name, count };
@@ -138,6 +134,22 @@ function AdminDashboardPage() {
         <p className="text-secondary text-center mt-5">Cargando estadísticas...</p>
       ) : (
         <>
+          {/* filtro de mes unificado para todas las estadísticas */}
+          <div className="d-flex align-items-center gap-3 mb-4">
+            <span className="text-secondary" style={{ fontSize: "14px" }}>Filtrar por mes:</span>
+            <select
+              value={statsMonth}
+              onChange={(e) => setStatsMonth(e.target.value)}
+              className="form-select form-select-sm bg-secondary text-white border-secondary"
+              style={{ maxWidth: "180px" }}
+            >
+              <option value="">Todos los meses</option>
+              {availableMonths.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </div>
+
           {/* primera fila: numeros mas importantes */}
           <section className="admin-stats-grid">
             <div className="admin-stat-card">
@@ -165,18 +177,6 @@ function AdminDashboardPage() {
                 ${totalRevenue.toLocaleString("es-AR")}
               </span>
               <span className="admin-stat-label">Total facturado</span>
-              {/* selector para filtrar el monto por mes, si no se elige muestra todo */}
-              <select
-                value={revenueMonth}
-                onChange={(e) => setRevenueMonth(e.target.value)}
-                className="form-select form-select-sm bg-secondary text-white border-secondary mt-2"
-                style={{ fontSize: "12px", maxWidth: "160px", margin: "8px auto 0" }}
-              >
-                <option value="">Todos los meses</option>
-                {availableMonths.map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
             </div>
             <div className="admin-stat-card admin-stat-card-wide">
               <span className="admin-stat-value admin-stat-value-text">

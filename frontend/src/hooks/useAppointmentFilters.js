@@ -41,11 +41,16 @@ function useAppointmentFilters(appointments) {
   const filtered = filteredByStatus
     .filter((a) => {
       const date = new Date(a.appointmentDate);
-      if (dateFrom && date < new Date(dateFrom)) return false;
+      if (dateFrom) {
+        // parseamos como fecha local para no tener problemas de timezone
+        const [fy, fm, fd] = dateFrom.split("-").map(Number);
+        const start = new Date(fy, fm - 1, fd, 0, 0, 0, 0);
+        if (date < start) return false;
+      }
       if (dateTo) {
-        // incluimos todo el día "hasta"
-        const end = new Date(dateTo);
-        end.setHours(23, 59, 59, 999);
+        // parseamos como fecha local e incluimos todo el día "hasta"
+        const [ty, tm, td] = dateTo.split("-").map(Number);
+        const end = new Date(ty, tm - 1, td, 23, 59, 59, 999);
         if (date > end) return false;
       }
       // si hay un barbero seleccionado, filtramos por él
